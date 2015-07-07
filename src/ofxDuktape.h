@@ -186,48 +186,79 @@ public:
     inline void pushObject() { duk_push_object(ctx); }
     // pushes an empty array to the top of the stack
     inline void pushArray() { duk_push_array(ctx); }
-    // pushes a global object
+    // pushes the global object to the top of the stack
     inline void pushGlobalObject() { duk_push_global_object(ctx); }
+    // pushes the global stash to the top of the stack
     inline void pushGlobalStash() { duk_push_global_stash(ctx); }
+    // pushes the heap stash to the top of the stack
     inline void pushHeapStash() { duk_push_heap_stash(ctx); }
+    // pushes a boolean value to the top of the stack
     inline void pushBool(bool val) { duk_push_boolean(ctx, val); }
+    inline void pushTrue() { duk_push_boolean(ctx, true); }
+    inline void pushFalse() { duk_push_boolean(ctx, false); }
+    // pushes a string value to the top of the stack
     inline void pushString(const string& s) { duk_push_lstring(ctx, s.c_str(), s.length()); }
+    // pushes a number value to the top of the stack
     inline void pushNumber(double n) { duk_push_number(ctx, n); }
+    // pushes an integer number value to the top of the stack
     inline void pushInt(int n) { duk_push_int(ctx, n); }
+    // pushes an unsigned integer number value to the top of the stack
     inline void pushUint(unsigned int n) { duk_push_uint(ctx, n); }
+    // pushes an empty fixed buffer with a given size to the top of the stack
     inline void* pushFixedBuffer(size_t size) {
         return duk_push_buffer(ctx, size, false);
     }
+    // pushes an empty resizable buffer with a given starting size to the top of the stack
     inline void* pushDynamicBuffer(size_t initial_size) {
         return duk_push_buffer(ctx, initial_size, true);
     }
-    
+    // pushes a function with a user-given pointer to the top of the stack
     void pushCFunction(c_function func, int arguments, void* userdata);
     
+    // pushes a pointer to a heap object into the top of the stack
     inline void pushHeapPtr(void* ptr) { duk_push_heapptr(ctx, ptr); }
     
+    // sets an argument into null
     inline void toNull(int index) { duk_to_null(ctx, index); }
+    // sets an argument into undefined
     inline void toUndefined(int index) { duk_to_undefined(ctx, index); }
+    // tries coercing an argument into a boolean value
     inline bool toBool(int index) { return duk_to_boolean(ctx, index); }
+    // tries coercing an argument into a buffer value
     inline void* toBuffer(int index, size_t* size) { return duk_to_buffer(ctx, index, size); }
+    // tries coercing an argument into a fixed buffer value
     inline void* toFixedBuffer(int index, size_t* size) { return duk_to_fixed_buffer(ctx, index, size); }
+    // tries coercing an argument into a dynamic buffer value
     inline void* toDynamicBuffer(int index, size_t* size) { return duk_to_dynamic_buffer(ctx, index, size); }
+    // tries coercing an argument into an integer
     inline int toInt(int index) { return duk_to_int(ctx, index); }
+    // tries coercing an argument into an unsigned integer
     inline unsigned int toUint(int index) { return duk_to_uint(ctx, index); }
+    // tries coercing an argument into a 32-bit integer
     inline int32_t toInt32(int index) { return duk_to_int32(ctx, index); }
+    // tries coercing an argument into a 16-bit unsigned integer
     inline uint16_t toUint16(int index) { return duk_to_uint16(ctx, index); }
+    // tries coercing an argument into a number
     inline double toNumber(int index) { return duk_to_number(ctx, index); }
+    // tries coercing an argument into an object
     inline void toObject(int index) { duk_to_object(ctx, index); }
+    // tries coercing an argument into a pointer
     inline void* toPointer(int index) { return duk_to_pointer(ctx, index); }
+    // tries coercing an argument into a string
     inline string toString(int index) {
         size_t size;
         const char* str = duk_to_lstring(ctx, index, &size);
         return string(str, size);
     }
+    // tries coercing an argument into a default value
     inline void toDefaultValue(int index, int hint) { duk_to_defaultvalue(ctx, index, hint); }
+    // tries coercing an argument into it's primitive type
     inline void toPrimitive(int index, int hint) { duk_to_primitive(ctx, index, hint); }
     
+    // requires the presence of null in the given argument (throws an error otherwise)
     inline void requireNull(int index) { duk_require_null(ctx, index); }
+    // requires the presence of a value that can be converted into an object
+    // in the given argument (throws an error otherwise)
     inline void requireObjectCoercible(int index) { duk_require_object_coercible(ctx, index); }
     
     inline bool getBool(int index) { return duk_get_boolean(ctx, index); }
