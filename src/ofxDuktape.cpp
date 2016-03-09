@@ -54,6 +54,29 @@ ofxDuktape::~ofxDuktape() {
 const char* ofxDuktapeSpecialFnPtr = "____ofxDuktape__fn__";
 const char* ofxDuktapeSpecialCtxPtr = "____ofxDuktape__ctx__";
 const char* ofxDuktapeSpecialUserPtr = "____ofxDuktape__user__";
+
+class ofxDuktapeFunctionObject {
+public:
+    ofxDuktape::cpp_function func;
+    ofxDuktapeFunctionObject(ofxDuktape::cpp_function func): func(func) {}
+    ~ofxDuktapeFunctionObject() {}
+    duk_ret_t operator()(ofxDuktape& duk) {
+        return func(duk);
+    }
+};
+duk_ret_t ofxDuktapeFunctionObjectFinalizer(duk_context* ctx) {
+    duk_get_prop_string(ctx, -1, ofxDuktapeSpecialFnPtr);
+    ofxDuktapeFunctionObject *obj = (ofxDuktapeFunctionObject*)duk_get_pointer(ctx, -1);
+    if (obj) {
+        delete obj;
+    } else {
+        duk_pop(ctx);
+        return -1;
+    }
+    duk_pop(ctx);
+    return 0;
+}
+
 static duk_ret_t internal_c_function_call(duk_context *ctx) {
     duk_push_current_function(ctx);
     duk_get_prop_string(ctx, -1, ofxDuktapeSpecialFnPtr);
@@ -66,17 +89,41 @@ static duk_ret_t internal_c_function_call(duk_context *ctx) {
     return fn(context, user);
 }
 
+static duk_ret_t internal_cpp_function_call(duk_context *ctx) {
+    duk_push_current_function(ctx);
+    duk_get_prop_string(ctx, -1, ofxDuktapeSpecialFnPtr);
+    duk_get_prop_string(ctx, -2, ofxDuktapeSpecialCtxPtr);
+    ofxDuktapeFunctionObject *obj = (ofxDuktapeFunctionObject *)duk_get_pointer(ctx, -2);
+    ofxDuktape* context = (ofxDuktape *)duk_get_pointer(ctx, -1);
+    duk_pop_2(ctx);
+    return (*obj)(*context);
+}
+
 void ofxDuktape::pushCFunction(c_function func, int arguments, void* userdata) {
     duk_push_c_function(ctx, internal_c_function_call, arguments);
     duk_push_pointer(ctx, (void*)func);
     duk_put_prop_string(ctx, -2, ofxDuktapeSpecialFnPtr);
-    duk_pop(ctx);
+    //duk_pop(ctx);
     duk_push_pointer(ctx, (void*)this);
     duk_put_prop_string(ctx, -2, ofxDuktapeSpecialCtxPtr);
-    duk_pop(ctx);
+    //duk_pop(ctx);
     duk_push_pointer(ctx, userdata);
     duk_put_prop_string(ctx, -2, ofxDuktapeSpecialUserPtr);
-    duk_pop(ctx);
+    //duk_pop(ctx);
+}
+
+void ofxDuktape::pushFunction(cpp_function func, int arguments) {
+    duk_push_c_function(ctx, internal_cpp_function_call, arguments);
+    ofxDuktapeFunctionObject *obj = new ofxDuktapeFunctionObject(func);
+    duk_push_pointer(ctx, (void*)obj);
+    duk_put_prop_string(ctx, -2, ofxDuktapeSpecialFnPtr);
+    //duk_pop(ctx);
+    duk_push_pointer(ctx, (void*)this);
+    duk_put_prop_string(ctx, -2, ofxDuktapeSpecialCtxPtr);
+    //duk_pop(ctx);
+    duk_push_c_function(ctx, ofxDuktapeFunctionObjectFinalizer, 1);
+    duk_set_finalizer(ctx, -2);
+    //duk_pop(ctx);
 }
 
 

@@ -9,11 +9,13 @@
 #define __ofxDuktape__
 
 #include "ofMain.h"
+#define DUK_OPT_CPP_EXCEPTIONS
 #include "duktape.h"
 
 class ofxDuktape {
 public:
     typedef int (*c_function)(ofxDuktape *duk, void* data);
+    typedef function<int(ofxDuktape &duk)> cpp_function;
     struct ErrorData {
         int code;
         string description;
@@ -215,8 +217,15 @@ public:
     // pushes a function with a user-given pointer to the top of the stack
     void pushCFunction(c_function func, int arguments, void* userdata);
     
+    // pushes a function using the stl type function<> that is able to be
+    // correctly collected
+    void pushFunction(cpp_function func, int arguments);
+    
     // pushes a pointer to a heap object into the top of the stack
     inline void pushHeapPtr(void* ptr) { duk_push_heapptr(ctx, ptr); }
+    
+    // safely tries to interpret a value in the stack as a string
+    inline string safeToString(int index) { return string(duk_safe_to_string(ctx, index)); }
     
     // sets an argument into null
     inline void toNull(int index) { duk_to_null(ctx, index); }
