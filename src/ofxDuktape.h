@@ -210,8 +210,6 @@ public:
     inline void pushString(const string& s) { duk_push_lstring(ctx, s.c_str(), s.length()); }
     // pushes a number value to the top of the stack
     inline void pushNumber(double n) { duk_push_number(ctx, n); }
-	// pushes a NaN to the top of the stack
-	inline void pushNaN() { duk_push_nan(ctx); }
     // pushes an integer number value to the top of the stack
     inline void pushInt(int n) { duk_push_int(ctx, n); }
     // pushes an unsigned integer number value to the top of the stack
@@ -243,6 +241,8 @@ public:
 
 	// gets an argument and casts to string
 	inline string safeToString(int index) { return duk_safe_to_string(ctx, index); }
+    
+    inline duk_ret_t safeCall(cpp_function func, int arguments, int rets);
 
     // sets an argument into null
     inline void toNull(int index) { duk_to_null(ctx, index); }

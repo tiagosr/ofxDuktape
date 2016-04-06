@@ -7,6 +7,7 @@
 
 #include "ofxDuktape.h"
 
+const char* ofxDuktapeProp = "\xff""ofxDuktape";
 static void* ofxDuktapeMalloc(ofxDuktape* duk, duk_size_t size) {
     return malloc(size);
 }
@@ -28,6 +29,8 @@ ofxDuktape::ofxDuktape(): ctx(NULL) {
                           (duk_free_function)ofxDuktapeFree,
                           (void*)this,
                           (duk_fatal_function)ofxDuktapeFatal);
+    duk_push_pointer(ctx, (void*)this);
+    duk_put_global_string(ctx, ofxDuktapeProp);
 }
 
 ofxDuktape::ofxDuktape(ofxDuktape*parent, bool newenv) {
@@ -38,12 +41,16 @@ ofxDuktape::ofxDuktape(ofxDuktape*parent, bool newenv) {
             duk_push_thread(parent->ctx);
         }
         ctx = duk_get_context(parent->ctx, -1);
+        duk_push_pointer(ctx, (void*)this);
+        duk_put_global_string(ctx, ofxDuktapeProp);
     } else {
         ctx = duk_create_heap((duk_alloc_function)ofxDuktapeMalloc,
                               (duk_realloc_function)ofxDuktapeRealloc,
                               (duk_free_function)ofxDuktapeFree,
                               (void*)this,
                               (duk_fatal_function)ofxDuktapeFatal);
+        duk_push_pointer(ctx, (void*)this);
+        duk_put_global_string(ctx, ofxDuktapeProp);
     }
 }
 
@@ -60,9 +67,9 @@ public:
 };
 
 
-const char* ofxDuktapeSpecialFnPtr = "____ofxDuktape__fn__";
-const char* ofxDuktapeSpecialCtxPtr = "____ofxDuktape__ctx__";
-const char* ofxDuktapeSpecialUserPtr = "____ofxDuktape__user__";
+const char* ofxDuktapeSpecialFnPtr = "\xff" "ofxDuktape_fn";
+const char* ofxDuktapeSpecialCtxPtr = "\xff" "ofxDuktape_ctx";
+const char* ofxDuktapeSpecialUserPtr = "\xff" "ofxDuktape_user";
 
 static duk_ret_t ofxDuktapeCPPFunctionWrapperFinalizer(duk_context *ctx) {
     duk_get_prop_string(ctx, -1, ofxDuktapeSpecialFnPtr);
@@ -118,6 +125,23 @@ void ofxDuktape::pushFunction(cpp_function func, int arguments) {
     //duk_pop(ctx);
     duk_push_c_function(ctx, ofxDuktapeCPPFunctionWrapperFinalizer, 1);
     duk_set_finalizer(ctx, -2);
+}
+
+static duk_ret_t ofxDuktapeSafeCallFunc(duk_context *ctx) {
+    if(duk_get_global_string(ctx, ofxDuktapeProp)) {
+        ofxDuktape *duk = (ofxDuktape*)duk_get_pointer(ctx, -1);
+        ofxDuktapeCPPFunctionWrapper *wrapper = (ofxDuktapeCPPFunctionWrapper *)duk_get_pointer(ctx, -1);
+        if(wrapper) {
+            return wrapper->func(*duk);
+        }
+    }
+    return -1;
+}
+
+duk_ret_t ofxDuktape::safeCall(cpp_function func, int arguments, int rets) {
+    shared_ptr<ofxDuktapeCPPFunctionWrapper> wrapper = make_shared<ofxDuktapeCPPFunctionWrapper>(func);
+    duk_push_pointer(ctx, wrapper.get());
+    return duk_safe_call(ctx, ofxDuktapeSafeCallFunc, arguments+1, rets);
 }
 
 static duk_size_t ofxDuktapeDebugReadCB(void* data, char* buffer, duk_size_t length) {
