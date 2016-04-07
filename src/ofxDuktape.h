@@ -63,26 +63,26 @@ public:
     inline void _error(duk_errcode_t errcode, const string& errmsg) { duk_error(ctx, errcode, errmsg.c_str()); }
     
     // concatenates a given amount of arguments into a string, put at the top of the stack
-    inline void concat(int count) { duk_concat(ctx, count); }
+    inline void concat(duk_idx_t count) { duk_concat(ctx, count); }
     // moves the argument at the top of the stack to the position indicated,
     // shifting all arguments at index and after upwards.
-    inline void insert(int index) { duk_insert(ctx, index); }
+    inline void insert(duk_idx_t index) { duk_insert(ctx, index); }
     // joins a given amount of values into a result string with a separator between each value
-    inline void join(int count) { duk_join(ctx, count); }
+    inline void join(duk_idx_t count) { duk_join(ctx, count); }
     // removes white-space characters from both ends of the string at index
-    inline void trim(int index) { duk_trim(ctx, index); }
+    inline void trim(duk_idx_t index) { duk_trim(ctx, index); }
     
     // calls the function at the top of the stack as a constructor
-    inline void _new(int num_args) { duk_new(ctx, num_args); }
+    inline void _new(duk_idx_t num_args) { duk_new(ctx, num_args); }
     // makes the given generator output the next iteration at the top of the stack (with optional value)
-    inline bool _next(int index, bool get_value) { return duk_next(ctx, index, get_value); }
+    inline bool _next(duk_idx_t index, bool get_value) { return duk_next(ctx, index, get_value); }
     // emits the enum structure for a given object in the stack
-    inline void _enum(int obj_index, unsigned int flags) { duk_enum(ctx, obj_index, flags); }
+    inline void _enum(duk_idx_t obj_index, unsigned int flags) { duk_enum(ctx, obj_index, flags); }
     
     // gets the index for the top of the stack (or the argument count)
     inline int getTop() { return duk_get_top(ctx); }
     // gets the length of the given object in the stack (the result of object.length)
-    inline int  getLength(int index) { return duk_get_length(ctx, index); }
+    inline int  getLength(duk_idx_t index) { return duk_get_length(ctx, index); }
     // checks if the stack has a certain amount of space available
     inline bool checkStack(int extra) { return duk_check_stack(ctx, extra); }
     // checks if there is space in the stack for at least the amount of objects for reaching top
@@ -96,32 +96,32 @@ public:
     // gets the current top index of the current stack frame, throwing an error if there is no stack
     inline int  requireTopIndex() { return duk_require_top_index(ctx); }
 	// ensures the object at index in the stack frame is a callable object
-	inline void requireCallable(int index) { duk_require_callable(ctx, index); }
+	inline void requireCallable(duk_idx_t index) { duk_require_callable(ctx, index); }
 	// gets the heap pointer at index, throwing an error if the object is not a heap pointer
 	
     
     // gets the type of the argument at index
-    inline int getType(int index) { return duk_get_type(ctx, index); }
+    inline int getType(duk_idx_t index) { return duk_get_type(ctx, index); }
     // gets the type mask of the argument at index
-    inline unsigned getTypeMask(int index) { return duk_get_type_mask(ctx, index); }
+    inline unsigned getTypeMask(duk_idx_t index) { return duk_get_type_mask(ctx, index); }
     
     // checks if the argument at index is of a given type
-    inline bool checkType(int index, int type) {
+    inline bool checkType(duk_idx_t index, int type) {
         return duk_check_type(ctx, index, type);
     }
     // checks if the argument at index matches a given type mask
-    inline bool checkTypeMask(int index, unsigned int type_mask) {
+    inline bool checkTypeMask(duk_idx_t index, unsigned int type_mask) {
         return duk_check_type_mask(ctx, index, type_mask);
     }
     // throws an error if the argument at index matches a given type mask
-    inline void requireTypeMask(int index, unsigned int type_mask) {
+    inline void requireTypeMask(duk_idx_t index, unsigned int type_mask) {
         duk_require_type_mask(ctx, index, type_mask);
     }
     
     // checks if an index is valid in the current stack frame
-    inline bool isValidIndex(int index) { return duk_is_valid_index(ctx, index); }
+    inline bool isValidIndex(duk_idx_t index) { return duk_is_valid_index(ctx, index); }
     // throws an error if the index is not valid in the current stack frame
-    inline void requireValidIndex(int index) { duk_require_valid_index(ctx, index); }
+    inline void requireValidIndex(duk_idx_t index) { duk_require_valid_index(ctx, index); }
 
     struct ReadEvent {
         ofxDuktape *duk;
@@ -154,34 +154,34 @@ public:
     inline void debuggerCooperate() { duk_debugger_cooperate(ctx); }
     
     // compresses the internal representation of the object at the given index
-    inline void compact(int index) { duk_compact(ctx, index); }
+    inline void compact(duk_idx_t index) { duk_compact(ctx, index); }
     
     
-    inline bool isArray(int index) { return duk_is_array(ctx, index); }
-    inline bool isBoolean(int index) { return duk_is_boolean(ctx, index); }
-    inline bool isBoundFunction(int index) { return duk_is_bound_function(ctx, index); }
-    inline bool isBuffer(int index) { return duk_is_buffer(ctx, index); }
-    inline bool isCFunction(int index) { return duk_is_c_function(ctx, index); }
-    inline bool isCallable(int index) { return duk_is_callable(ctx, index); }
+    inline bool isArray(duk_idx_t index) { return duk_is_array(ctx, index); }
+    inline bool isBoolean(duk_idx_t index) { return duk_is_boolean(ctx, index); }
+    inline bool isBoundFunction(duk_idx_t index) { return duk_is_bound_function(ctx, index); }
+    inline bool isBuffer(duk_idx_t index) { return duk_is_buffer(ctx, index); }
+    inline bool isCFunction(duk_idx_t index) { return duk_is_c_function(ctx, index); }
+    inline bool isCallable(duk_idx_t index) { return duk_is_callable(ctx, index); }
     inline bool isConstructorCall() { return duk_is_constructor_call(ctx); }
-    inline bool isDynamicBuffer(int index) { return duk_is_dynamic_buffer(ctx, index); }
-    inline bool isEcmascriptFunction(int index) { return duk_is_ecmascript_function(ctx, index); }
-    inline bool isError(int index) { return duk_is_error(ctx, index); }
-    inline bool isFixedBuffer(int index) { return duk_is_fixed_buffer(ctx, index); }
-    inline bool isFunction(int index) { return duk_is_function(ctx, index); }
-    inline bool isLightfunc(int index) { return duk_is_lightfunc(ctx, index); }
-    inline bool isNaN(int index) { return duk_is_nan(ctx, index); }
-    inline bool isNull(int index) { return duk_is_null(ctx, index); }
-    inline bool isNullOrUndefined(int index) { return duk_is_null_or_undefined(ctx, index); }
-    inline bool isNumber(int index) { return duk_is_number(ctx, index); }
-    inline bool isObject(int index) { return duk_is_object(ctx, index); }
-    inline bool isObjectCoercible(int index) { return duk_is_object_coercible(ctx, index); }
-    inline bool isPointer(int index) { return duk_is_pointer(ctx, index); }
-    inline bool isPrimitive(int index) { return duk_is_primitive(ctx, index); }
+    inline bool isDynamicBuffer(duk_idx_t index) { return duk_is_dynamic_buffer(ctx, index); }
+    inline bool isEcmascriptFunction(duk_idx_t index) { return duk_is_ecmascript_function(ctx, index); }
+    inline bool isError(duk_idx_t index) { return duk_is_error(ctx, index); }
+    inline bool isFixedBuffer(duk_idx_t index) { return duk_is_fixed_buffer(ctx, index); }
+    inline bool isFunction(duk_idx_t index) { return duk_is_function(ctx, index); }
+    inline bool isLightfunc(duk_idx_t index) { return duk_is_lightfunc(ctx, index); }
+    inline bool isNaN(duk_idx_t index) { return duk_is_nan(ctx, index); }
+    inline bool isNull(duk_idx_t index) { return duk_is_null(ctx, index); }
+    inline bool isNullOrUndefined(duk_idx_t index) { return duk_is_null_or_undefined(ctx, index); }
+    inline bool isNumber(duk_idx_t index) { return duk_is_number(ctx, index); }
+    inline bool isObject(duk_idx_t index) { return duk_is_object(ctx, index); }
+    inline bool isObjectCoercible(duk_idx_t index) { return duk_is_object_coercible(ctx, index); }
+    inline bool isPointer(duk_idx_t index) { return duk_is_pointer(ctx, index); }
+    inline bool isPrimitive(duk_idx_t index) { return duk_is_primitive(ctx, index); }
     inline bool isStrictCall() { return duk_is_strict_call(ctx); }
-    inline bool isString(int index) { return duk_is_string(ctx, index); }
-    inline bool isThread(int index) { return duk_is_thread(ctx, index); }
-    inline bool isUndefined(int index) { return duk_is_undefined(ctx, index); }
+    inline bool isString(duk_idx_t index) { return duk_is_string(ctx, index); }
+    inline bool isThread(duk_idx_t index) { return duk_is_thread(ctx, index); }
+    inline bool isUndefined(duk_idx_t index) { return duk_is_undefined(ctx, index); }
     
 
 	// pushed 'undefined' to the top of the stack
@@ -240,109 +240,109 @@ public:
 	// safe getters
 
 	// gets an argument and casts to string
-	inline string safeToString(int index) { return duk_safe_to_string(ctx, index); }
+	inline string safeToString(duk_idx_t index) { return duk_safe_to_string(ctx, index); }
 
 	inline duk_ret_t safeCall(cpp_function func, int arguments, int rets);
 
     // sets an argument into null
-    inline void toNull(int index) { duk_to_null(ctx, index); }
+    inline void toNull(duk_idx_t index) { duk_to_null(ctx, index); }
     // sets an argument into undefined
-    inline void toUndefined(int index) { duk_to_undefined(ctx, index); }
+    inline void toUndefined(duk_idx_t index) { duk_to_undefined(ctx, index); }
     // tries coercing an argument into a boolean value
-    inline bool toBool(int index) { return duk_to_boolean(ctx, index); }
+    inline bool toBool(duk_idx_t index) { return duk_to_boolean(ctx, index); }
     // tries coercing an argument into a buffer value
-    inline void* toBuffer(int index, size_t* size) { return duk_to_buffer(ctx, index, size); }
+    inline void* toBuffer(duk_idx_t index, size_t* size) { return duk_to_buffer(ctx, index, size); }
     // tries coercing an argument into a fixed buffer value
-    inline void* toFixedBuffer(int index, size_t* size) { return duk_to_fixed_buffer(ctx, index, size); }
+    inline void* toFixedBuffer(duk_idx_t index, size_t* size) { return duk_to_fixed_buffer(ctx, index, size); }
     // tries coercing an argument into a dynamic buffer value
-    inline void* toDynamicBuffer(int index, size_t* size) { return duk_to_dynamic_buffer(ctx, index, size); }
+    inline void* toDynamicBuffer(duk_idx_t index, size_t* size) { return duk_to_dynamic_buffer(ctx, index, size); }
     // tries coercing an argument into an integer
-    inline int toInt(int index) { return duk_to_int(ctx, index); }
+    inline int toInt(duk_idx_t index) { return duk_to_int(ctx, index); }
     // tries coercing an argument into an unsigned integer
-    inline unsigned int toUint(int index) { return duk_to_uint(ctx, index); }
+    inline unsigned int toUint(duk_idx_t index) { return duk_to_uint(ctx, index); }
     // tries coercing an argument into a 32-bit integer
-    inline int32_t toInt32(int index) { return duk_to_int32(ctx, index); }
+    inline int32_t toInt32(duk_idx_t index) { return duk_to_int32(ctx, index); }
     // tries coercing an argument into a 16-bit unsigned integer
-    inline uint16_t toUint16(int index) { return duk_to_uint16(ctx, index); }
+    inline uint16_t toUint16(duk_idx_t index) { return duk_to_uint16(ctx, index); }
     // tries coercing an argument into a number
-    inline double toNumber(int index) { return duk_to_number(ctx, index); }
+    inline double toNumber(duk_idx_t index) { return duk_to_number(ctx, index); }
     // tries coercing an argument into an object
-    inline void toObject(int index) { duk_to_object(ctx, index); }
+    inline void toObject(duk_idx_t index) { duk_to_object(ctx, index); }
     // tries coercing an argument into a pointer
-    inline void* toPointer(int index) { return duk_to_pointer(ctx, index); }
+    inline void* toPointer(duk_idx_t index) { return duk_to_pointer(ctx, index); }
     // tries coercing an argument into a string
-    inline string toString(int index) {
+    inline string toString(duk_idx_t index) {
         size_t size;
         const char* str = duk_to_lstring(ctx, index, &size);
         return string(str, size);
     }
     // tries coercing an argument into a default value
-    inline void toDefaultValue(int index, int hint) { duk_to_defaultvalue(ctx, index, hint); }
+    inline void toDefaultValue(duk_idx_t index, int hint) { duk_to_defaultvalue(ctx, index, hint); }
     // tries coercing an argument into it's primitive type
-    inline void toPrimitive(int index, int hint) { duk_to_primitive(ctx, index, hint); }
+    inline void toPrimitive(duk_idx_t index, int hint) { duk_to_primitive(ctx, index, hint); }
     
     // requires the presence of null in the given argument (throws an error otherwise)
-    inline void requireNull(int index) { duk_require_null(ctx, index); }
+    inline void requireNull(duk_idx_t index) { duk_require_null(ctx, index); }
     // requires the presence of a value that can be converted into an object
     // in the given argument (throws an error otherwise)
-    inline void requireObjectCoercible(int index) { duk_require_object_coercible(ctx, index); }
+    inline void requireObjectCoercible(duk_idx_t index) { duk_require_object_coercible(ctx, index); }
     
-    inline bool getBool(int index) { return duk_get_boolean(ctx, index); }
-    inline bool requireBool(int index) { return duk_require_boolean(ctx, index); }
-    inline int  getInt(int index)  { return duk_get_int(ctx, index); }
-    inline int requireInt(int index) { return duk_require_int(ctx, index); }
-    inline unsigned int getUint(int index) { return duk_get_uint(ctx, index); }
-    inline unsigned int requireUint(int index) { return duk_require_uint(ctx, index); }
-    inline double getNumber(int index) { return duk_get_number(ctx, index); }
-    inline double requireNumber(int index) { return duk_require_number(ctx, index); }
-    inline string getString(int index) {
+    inline bool getBool(duk_idx_t index) { return duk_get_boolean(ctx, index); }
+    inline bool requireBool(duk_idx_t index) { return duk_require_boolean(ctx, index); }
+    inline int  getInt(duk_idx_t index)  { return duk_get_int(ctx, index); }
+    inline int requireInt(duk_idx_t index) { return duk_require_int(ctx, index); }
+    inline unsigned int getUint(duk_idx_t index) { return duk_get_uint(ctx, index); }
+    inline unsigned int requireUint(duk_idx_t index) { return duk_require_uint(ctx, index); }
+    inline double getNumber(duk_idx_t index) { return duk_get_number(ctx, index); }
+    inline double requireNumber(duk_idx_t index) { return duk_require_number(ctx, index); }
+    inline string getString(duk_idx_t index) {
         size_t length;
         const char* str = duk_get_lstring(ctx, index, &length);
         return string(str, length);
     }
-    inline string requireString(int index) {
+    inline string requireString(duk_idx_t index) {
         size_t length;
         const char* str = duk_require_lstring(ctx, index, &length);
         return string(str, length);
     }
-    inline void* getBuffer(int index, size_t* out_size) {
+    inline void* getBuffer(duk_idx_t index, size_t* out_size) {
         return duk_get_buffer(ctx, index, out_size);
     }
-    inline void* requireBuffer(int index, size_t* out_size) {
+    inline void* requireBuffer(duk_idx_t index, size_t* out_size) {
         return duk_require_buffer(ctx, index, out_size);
     }
-    inline void* getHeapPtr(int index) { return duk_get_heapptr(ctx, index); }
-    inline void* requireHeapPtr(int index) { return duk_require_heapptr(ctx, index); }
-    inline void* getPointer(int index) { return duk_get_pointer(ctx, index); }
-    inline void* requirePointer(int index) { return duk_require_pointer(ctx, index); }
+    inline void* getHeapPtr(duk_idx_t index) { return duk_get_heapptr(ctx, index); }
+    inline void* requireHeapPtr(duk_idx_t index) { return duk_require_heapptr(ctx, index); }
+    inline void* getPointer(duk_idx_t index) { return duk_get_pointer(ctx, index); }
+    inline void* requirePointer(duk_idx_t index) { return duk_require_pointer(ctx, index); }
     
-    inline void* resizeBuffer(int index, size_t new_size) {
+    inline void* resizeBuffer(duk_idx_t index, size_t new_size) {
         return duk_resize_buffer(ctx, index, new_size);
     }
     
-    inline bool getProp(int obj_index) { return duk_get_prop(ctx, obj_index); }
-    inline bool getPropIndex(int obj_index, int arr_index) {
+    inline bool getProp(duk_idx_t obj_index) { return duk_get_prop(ctx, obj_index); }
+    inline bool getPropIndex(duk_idx_t obj_index, int arr_index) {
         return duk_get_prop_index(ctx, obj_index, arr_index);
     }
-    inline bool getPropString(int obj_index, const string& key) {
+    inline bool getPropString(duk_idx_t obj_index, const string& key) {
         return duk_get_prop_string(ctx, obj_index, key.c_str());
     }
-    inline void getPrototype(int obj_index) { duk_get_prototype(ctx, obj_index); }
-    inline bool hasProp(int obj_index) {
+    inline void getPrototype(duk_idx_t obj_index) { duk_get_prototype(ctx, obj_index); }
+    inline bool hasProp(duk_idx_t obj_index) {
         return duk_has_prop(ctx, obj_index);
     }
-    inline bool hasPropIndex(int obj_index, int prop_index) {
+    inline bool hasPropIndex(duk_idx_t obj_index, int prop_index) {
         return duk_has_prop_index(ctx, obj_index, prop_index);
     }
-    inline bool hasPropString(int obj_index, const string& key) {
+    inline bool hasPropString(duk_idx_t obj_index, const string& key) {
         return duk_has_prop_string(ctx, obj_index, key.c_str());
     }
 
-	inline bool putProp(int obj_index) { return duk_put_prop(ctx, obj_index); }
-	inline bool putPropIndex(int obj_index, int arr_index) {
+	inline bool putProp(duk_idx_t obj_index) { return duk_put_prop(ctx, obj_index); }
+	inline bool putPropIndex(duk_idx_t obj_index, int arr_index) {
 		return duk_put_prop_index(ctx, obj_index, arr_index);
 	}
-	inline bool putPropString(int obj_index, const string& key) {
+	inline bool putPropString(duk_idx_t obj_index, const string& key) {
 		return duk_put_prop_string(ctx, obj_index, key.c_str());
 	}
 
@@ -352,28 +352,48 @@ public:
     }
     
     inline void setGlobalObject() { duk_set_global_object(ctx); }
-    inline void setMagic(int index, int magic) { duk_set_magic(ctx, index, magic); }
-    inline void setPrototype(int index) { duk_set_prototype(ctx, index); }
-    inline void setTop(int index) { duk_set_top(ctx, index); }
+    inline void setMagic(duk_idx_t index, int magic) { duk_set_magic(ctx, index, magic); }
+    inline void setPrototype(duk_idx_t index) { duk_set_prototype(ctx, index); }
+    inline void setTop(duk_idx_t index) { duk_set_top(ctx, index); }
     
-    inline void defineProperty(int obj_index, unsigned int flags) { duk_def_prop(ctx, obj_index, flags); }
-    inline bool deleteProperty(int obj_index) { return duk_del_prop(ctx, obj_index); }
-    inline bool deletePropertyIndex(int obj_index, unsigned int array_index) {
+    inline void defineProperty(duk_idx_t obj_index, unsigned int flags) {
+        duk_def_prop(ctx, obj_index, flags);
+    }
+    inline bool deleteProperty(duk_idx_t obj_index) { return duk_del_prop(ctx, obj_index); }
+    inline bool deletePropertyIndex(duk_idx_t obj_index, unsigned int array_index) {
         return duk_del_prop_index(ctx, obj_index, array_index);
     }
-    inline bool deletePropertyString(int obj_index, string key) {
+    inline bool deletePropertyString(duk_idx_t obj_index, const string& key) {
         return duk_del_prop_string(ctx, obj_index, key.c_str());
     }
     
-    inline bool equals(int index1, int index2) {
+    inline void putObjectGetterSetter(duk_idx_t obj, const string& key,
+                                      cpp_function getter, cpp_function setter) {
+        pushString(key);
+        pushFunction(getter, 0);
+        pushFunction(setter, 1);
+        defineProperty(obj>=0? obj:obj-3, DUK_DEFPROP_HAVE_GETTER | DUK_DEFPROP_HAVE_SETTER);
+    }
+    inline void putObjectGetter(duk_idx_t obj, const string& key, cpp_function getter) {
+        pushString(key);
+        pushFunction(getter, 0);
+        defineProperty(obj>=0? obj:obj-2, DUK_DEFPROP_HAVE_GETTER);
+    }
+    inline void putObjectSetter(duk_idx_t obj, const string& key, cpp_function setter) {
+        pushString(key);
+        pushFunction(setter, 1);
+        defineProperty(obj>=0? obj:obj-2, DUK_DEFPROP_HAVE_SETTER);
+    }
+    
+    inline bool equals(duk_idx_t index1, duk_idx_t index2) {
         return duk_equals(ctx, index1, index2);
     }
     
-    inline bool strictEquals(int index1, int index2) {
+    inline bool strictEquals(duk_idx_t index1, duk_idx_t index2) {
         return duk_strict_equals(ctx, index1, index2);
     }
     
-    inline void substring(int index, size_t start, size_t end) {
+    inline void substring(duk_idx_t index, size_t start, size_t end) {
         duk_substring(ctx, index, start, end);
     }
     
