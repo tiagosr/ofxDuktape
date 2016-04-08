@@ -51,6 +51,7 @@ public:
     
     // normalizes index relative to the bottom of the current frame
     inline duk_idx_t normalizeIndex(duk_idx_t index) { return duk_normalize_index(ctx, index); }
+    inline duk_idx_t requireNormalizeIndex(duk_idx_t index) { return duk_require_normalize_index(ctx, index); }
     
     // copies topmost count arguments in stack from one thread to another
     inline void xcopyTop(ofxDuktape* other, int count) {
@@ -250,6 +251,8 @@ public:
     // pushes a pointer to a heap object into the top of the stack
     inline void pushHeapPtr(void* ptr) { duk_push_heapptr(ctx, ptr); }
     
+    // pushes current function object into the top of the stack
+    inline void pushCurrentFunction() { duk_push_current_function(ctx); }
     
     // safe getters
     
@@ -379,42 +382,59 @@ public:
         return duk_del_prop_index(ctx, obj_index, array_index);
     }
     inline bool deletePropertyString(duk_idx_t obj_index, const string& key) {
+        obj_index = normalizeIndex(obj_index);
         pushString(key);
-        return deleteProperty(obj_index>=0?obj_index:obj_index-1);
+        return deleteProperty(obj_index);
+    }
+    
+    inline void setFinalizer(duk_idx_t obj_index) {
+        duk_set_finalizer(ctx, obj_index);
+    }
+    
+    inline void setFinalizerFunction(duk_idx_t obj_index, cpp_function func) {
+        obj_index = normalizeIndex(obj_index);
+        pushFunction(func, 1);
+        setFinalizer(obj_index);
     }
     
     inline void putObjectGetterSetter(duk_idx_t obj, const string& key,
                                       cpp_function getter, cpp_function setter) {
+        obj = normalizeIndex(obj);
         pushString(key);
         pushFunction(getter, 0);
         pushFunction(setter, 1);
-        defineProperty(obj>=0? obj:obj-3, DUK_DEFPROP_HAVE_GETTER | DUK_DEFPROP_HAVE_SETTER);
+        defineProperty(obj, DUK_DEFPROP_HAVE_GETTER | DUK_DEFPROP_HAVE_SETTER);
     }
     inline void putObjectGetter(duk_idx_t obj, const string& key, cpp_function getter) {
+        obj = normalizeIndex(obj);
         pushString(key);
         pushFunction(getter, 0);
-        defineProperty(obj>=0? obj:obj-2, DUK_DEFPROP_HAVE_GETTER);
+        defineProperty(obj, DUK_DEFPROP_HAVE_GETTER);
     }
     inline void putObjectSetter(duk_idx_t obj, const string& key, cpp_function setter) {
+        obj = normalizeIndex(obj);
         pushString(key);
         pushFunction(setter, 1);
-        defineProperty(obj>=0? obj:obj-2, DUK_DEFPROP_HAVE_SETTER);
+        defineProperty(obj, DUK_DEFPROP_HAVE_SETTER);
     }
     
     inline void putObjectConstInt(duk_idx_t obj, const string& key, int value) {
+        obj = normalizeIndex(obj);
         pushString(key);
         pushInt(value);
-        defineProperty(obj>=0? obj:obj-2, 0); // set read-only
+        defineProperty(obj, 0); // set read-only
     }
     inline void putObjectConstNumber(duk_idx_t obj, const string& key, double value) {
+        obj = normalizeIndex(obj);
         pushString(key);
         pushNumber(value);
-        defineProperty(obj>=0? obj:obj-2, 0); // set read-only
+        defineProperty(obj, 0); // set read-only
     }
     inline void putObjectConstString(duk_idx_t obj, const string& key, const string& value) {
+        obj = normalizeIndex(obj);
         pushString(key);
         pushString(value);
-        defineProperty(obj>=0? obj:obj-2, 0); // set read-only
+        defineProperty(obj, 0); // set read-only
     }
     inline void putObjectConstBool(duk_idx_t obj, const string& key, bool value) {
         pushString(key);
@@ -1006,6 +1026,27 @@ public:
         }
     }
     
+    inline void base64Decode(duk_idx_t obj) {
+        duk_base64_decode(ctx, obj);
+    }
+    inline string base64Encode(duk_idx_t obj) {
+        return duk_base64_encode(ctx, obj);
+    }
+    inline void base64Decode(const string& str) {
+        pushString(str);
+        base64Decode(-1);
+    }
+    
+    inline void jsonDecode(duk_idx_t obj) {
+        duk_json_decode(ctx, obj);
+    }
+    inline string jsonEncode(duk_idx_t obj) {
+        return duk_json_encode(ctx, obj);
+    }
+    inline void jsonDecode(const string& str) {
+        pushString(str);
+        jsonDecode(-1);
+    }
     
 };
 
