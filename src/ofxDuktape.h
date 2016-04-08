@@ -437,6 +437,39 @@ public:
         defineProperty(obj, DUK_DEFPROP_HAVE_SETTER);
     }
     
+    inline void putObjectParam(duk_idx_t obj, ofParameter<int>& param) {
+        putObjectGetterSetter(obj, param.getName(),
+                              [&](ofxDuktape& duk) { duk.pushInt(param); return 1; },
+                              [&](ofxDuktape& duk) { param = duk.toInt(0); return 0; }
+                              );
+    }
+    inline void putObjectParam(duk_idx_t obj, ofParameter<float>& param) {
+        putObjectGetterSetter(obj, param.getName(),
+                              [&](ofxDuktape& duk) { duk.pushNumber(param); return 1; },
+                              [&](ofxDuktape& duk) { param = duk.toNumber(0); return 0; }
+                              );
+    }
+    inline void putObjectParam(duk_idx_t obj, ofParameter<double>& param) {
+        putObjectGetterSetter(obj, param.getName(),
+                              [&](ofxDuktape& duk) { duk.pushNumber(param); return 1; },
+                              [&](ofxDuktape& duk) { param = duk.toNumber(0); return 0; }
+                              );
+    }
+    inline void putObjectParam(duk_idx_t obj, ofParameter<string>& param) {
+        putObjectGetterSetter(obj, param.getName(),
+                              [&](ofxDuktape& duk) { duk.pushString(param); return 1; },
+                              [&](ofxDuktape& duk) { param = duk.toString(0); return 0; }
+                              );
+    }
+    inline void putObjectParam(duk_idx_t obj, ofParameter<bool>& param) {
+        putObjectGetterSetter(obj, param.getName(),
+                              [&](ofxDuktape& duk) { duk.pushBool(param); return 1; },
+                              [&](ofxDuktape& duk) { param = duk.toBool(0); return 0; }
+                              );
+    }
+
+
+    
     inline void putObjectConstInt(duk_idx_t obj, const string& key, int value) {
         obj = normalizeIndex(obj);
         pushString(key);
