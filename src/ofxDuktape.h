@@ -17,7 +17,7 @@
 class ofxDuktape {
 public:
     typedef int (*c_function)(ofxDuktape *duk, void* data);
-	typedef function<int(ofxDuktape&)> cpp_function;
+    typedef function<int(ofxDuktape&)> cpp_function;
     struct ErrorData {
         int code;
         string description;
@@ -48,6 +48,9 @@ public:
     inline void swapTop(int other) { duk_swap_top(ctx, other); }
     // copies an argument to another, overwriting the second one
     inline void copy(int from, int to) { duk_copy(ctx, from, to); }
+    
+    // normalizes index relative to the bottom of the current frame
+    inline duk_idx_t normalizeIndex(duk_idx_t index) { return duk_normalize_index(ctx, index); }
     
     // copies topmost count arguments in stack from one thread to another
     inline void xcopyTop(ofxDuktape* other, int count) {
@@ -97,10 +100,10 @@ public:
     inline int  getTopIndex() { return duk_get_top_index(ctx); }
     // gets the current top index of the current stack frame, throwing an error if there is no stack
     inline int  requireTopIndex() { return duk_require_top_index(ctx); }
-	// ensures the object at index in the stack frame is a callable object
-	inline void requireCallable(duk_idx_t index) { duk_require_callable(ctx, index); }
-	// gets the heap pointer at index, throwing an error if the object is not a heap pointer
-	
+    // ensures the object at index in the stack frame is a callable object
+    inline void requireCallable(duk_idx_t index) { duk_require_callable(ctx, index); }
+    // gets the heap pointer at index, throwing an error if the object is not a heap pointer
+    
     
     // gets the type of the argument at index
     inline int getType(duk_idx_t index) { return duk_get_type(ctx, index); }
@@ -124,7 +127,12 @@ public:
     inline bool isValidIndex(duk_idx_t index) { return duk_is_valid_index(ctx, index); }
     // throws an error if the index is not valid in the current stack frame
     inline void requireValidIndex(duk_idx_t index) { duk_require_valid_index(ctx, index); }
-
+    
+    //
+    inline bool next(duk_idx_t enum_index, bool get_value = true) {
+        return duk_next(ctx, enum_index, get_value);
+    }
+    
     struct ReadEvent {
         ofxDuktape *duk;
         char* buffer;
@@ -185,13 +193,17 @@ public:
     inline bool isThread(duk_idx_t index) { return duk_is_thread(ctx, index); }
     inline bool isUndefined(duk_idx_t index) { return duk_is_undefined(ctx, index); }
     
-
-	// pushed 'undefined' to the top of the stack
-	inline void pushUndefined() { duk_push_undefined(ctx); }
+    inline bool isRangeError(duk_idx_t index) { return duk_is_range_error(ctx, index); }
+    inline bool isReferenceError(duk_idx_t index) { return duk_is_reference_error(ctx, index); }
+    
+    // pushed 'undefined' to the top of the stack
+    inline void pushUndefined() { duk_push_undefined(ctx); }
     // pushes 'null' to the top of the stack
     inline void pushNull() { duk_push_null(ctx); }
     // pushes a NaN value to the top of the stack
     inline void pushNaN() { duk_push_nan(ctx); }
+    // pushes the "this" object
+    inline void pushThis() { duk_push_this(ctx); }
     // pushes an empty object to the top of the stack
     inline duk_idx_t pushObject() { return duk_push_object(ctx); }
     // pushes an empty array to the top of the stack
@@ -204,9 +216,9 @@ public:
     inline void pushHeapStash() { duk_push_heap_stash(ctx); }
     // pushes a boolean value to the top of the stack
     inline void pushBool(bool val) { duk_push_boolean(ctx, val); }
-	// pushes the 'true' value to the top of the stack
+    // pushes the 'true' value to the top of the stack
     inline void pushTrue() { duk_push_true(ctx); }
-	// pushes the 'false' value to the top of the stack
+    // pushes the 'false' value to the top of the stack
     inline void pushFalse() { duk_push_false(ctx); }
     // pushes a string value to the top of the stack
     inline void pushString(const string& s) { duk_push_lstring(ctx, s.c_str(), s.length()); }
@@ -224,28 +236,28 @@ public:
     inline void* pushDynamicBuffer(size_t initial_size) {
         return duk_push_buffer(ctx, initial_size, true);
     }
-	// pushes an external buffer to the top of the stack
-	inline void pushExternalBuffer(void* ptr, size_t len) {
-		duk_push_external_buffer(ctx);
-		duk_config_buffer(ctx, -1, ptr, len);
-	}
+    // pushes an external buffer to the top of the stack
+    inline void pushExternalBuffer(void* ptr, size_t len) {
+        duk_push_external_buffer(ctx);
+        duk_config_buffer(ctx, -1, ptr, len);
+    }
     // pushes a C function with a user-given pointer to the top of the stack
     void pushCFunction(c_function func, int arguments, void* userdata);
     
-	// pushes a C++ function (with a single argument)
-	void pushFunction(cpp_function func, int arguments);
-
+    // pushes a C++ function (with a single argument)
+    void pushFunction(cpp_function func, int arguments);
+    
     // pushes a pointer to a heap object into the top of the stack
     inline void pushHeapPtr(void* ptr) { duk_push_heapptr(ctx, ptr); }
-
-
-	// safe getters
-
-	// gets an argument and casts to string
-	inline string safeToString(duk_idx_t index) { return duk_safe_to_string(ctx, index); }
-
-	inline duk_ret_t safeCall(cpp_function func, int arguments, int rets);
-
+    
+    
+    // safe getters
+    
+    // gets an argument and casts to string
+    inline string safeToString(duk_idx_t index) { return duk_safe_to_string(ctx, index); }
+    
+    inline duk_ret_t safeCall(cpp_function func, int arguments, int rets);
+    
     // sets an argument into null
     inline void toNull(duk_idx_t index) { duk_to_null(ctx, index); }
     // sets an argument into undefined
@@ -339,15 +351,16 @@ public:
     inline bool hasPropString(duk_idx_t obj_index, const string& key) {
         return duk_has_prop_string(ctx, obj_index, key.c_str());
     }
-
-	inline bool putProp(duk_idx_t obj_index) { return duk_put_prop(ctx, obj_index); }
-	inline bool putPropIndex(duk_idx_t obj_index, int arr_index) {
-		return duk_put_prop_index(ctx, obj_index, arr_index);
-	}
-	inline bool putPropString(duk_idx_t obj_index, const string& key) {
-		return duk_put_prop_string(ctx, obj_index, key.c_str());
-	}
-
+    
+    
+    inline bool putProp(duk_idx_t obj_index) { return duk_put_prop(ctx, obj_index); }
+    inline bool putPropIndex(duk_idx_t obj_index, int arr_index) {
+        return duk_put_prop_index(ctx, obj_index, arr_index);
+    }
+    inline bool putPropString(duk_idx_t obj_index, const string& key) {
+        return duk_put_prop_string(ctx, obj_index, key.c_str());
+    }
+    
     inline void putGlobalString(const string& s) { duk_put_global_string(ctx, s.c_str()); }
     inline bool getGlobalString(const string& key) {
         return duk_get_global_string(ctx, key.c_str());
@@ -408,32 +421,57 @@ public:
         pushBool(value);
         defineProperty(obj>=0? obj:obj-2, 0); // set read-only
     }
-
     
-    typedef tuple<string, cpp_function, int> object_function_value;
+    struct object_function_value {
+        string prop;
+        cpp_function func;
+        int argcount;
+        object_function_value() {}
+        object_function_value(const string& prop, cpp_function func, int argcount):
+        prop(prop), func(func), argcount(argcount) {}
+    };
     
     inline void putObjectFunctions(duk_idx_t obj, initializer_list<object_function_value> init) {
         for(auto& fn: init) {
-            putObjectFunction(obj, get<0>(fn), get<1>(fn), get<2>(fn));
+            putObjectFunction(obj, fn.prop, fn.func, fn.argcount);
         }
     }
-    typedef tuple<string, cpp_function, cpp_function> object_getter_setter_value;
-    typedef pair<string, cpp_function> object_getter_value;
-    typedef pair<string, cpp_function> object_setter_value;
+    struct object_getter_setter_value {
+        string prop;
+        cpp_function getter, setter;
+        object_getter_setter_value() {}
+        object_getter_setter_value(const string& prop, cpp_function getter, cpp_function setter):
+        prop(prop), getter(getter), setter(setter) { }
+    };
+    struct object_getter_value {
+        string prop;
+        cpp_function getter;
+        object_getter_value() {}
+        object_getter_value(const string& prop, cpp_function getter):
+        prop(prop), getter(getter) { }
+    };
+    
+    struct object_setter_value {
+        string prop;
+        cpp_function setter;
+        object_setter_value() {}
+        object_setter_value(const string& prop, cpp_function setter):
+        prop(prop), setter(setter) { }
+    };
     
     inline void putObjectGettersSetters(duk_idx_t obj, initializer_list<object_getter_setter_value> init) {
         for(auto& getset: init) {
-            putObjectGetterSetter(obj, get<0>(getset), get<1>(getset), get<2>(getset));
+            putObjectGetterSetter(obj, getset.prop, getset.getter, getset.setter);
         }
     }
     inline void putObjectGetters(duk_idx_t obj, initializer_list<object_getter_value> init) {
         for(auto& getset: init) {
-            putObjectGetter(obj, get<0>(getset), get<1>(getset));
+            putObjectGetter(obj, getset.prop, getset.getter);
         }
     }
     inline void putObjectSetters(duk_idx_t obj, initializer_list<object_setter_value> init) {
         for(auto& getset: init) {
-            putObjectSetter(obj, get<0>(getset), get<1>(getset));
+            putObjectSetter(obj, getset.prop, getset.setter);
         }
     }
     typedef pair<string, int> object_int_value;
@@ -441,9 +479,19 @@ public:
     typedef pair<string, string> object_string_value;
     typedef pair<string, bool> object_bool_value;
     
+    inline void putObjectInts(duk_idx_t obj, initializer_list<object_int_value> init) {
+        for(auto& i: init) {
+            putObjectInt(obj, get<0>(i), get<1>(i));
+        }
+    }
     inline void putObjectConstInts(duk_idx_t obj, initializer_list<object_int_value> init) {
         for(auto& i: init) {
             putObjectConstInt(obj, get<0>(i), get<1>(i));
+        }
+    }
+    inline void putObjectNumbers(duk_idx_t obj, initializer_list<object_number_value> init) {
+        for(auto& i: init) {
+            putObjectNumber(obj, get<0>(i), get<1>(i));
         }
     }
     inline void putObjectConstNumbers(duk_idx_t obj, initializer_list<object_number_value> init) {
@@ -451,9 +499,19 @@ public:
             putObjectConstNumber(obj, get<0>(i), get<1>(i));
         }
     }
+    inline void putObjectBools(duk_idx_t obj, initializer_list<object_bool_value> init) {
+        for(auto& i: init) {
+            putObjectBool(obj, get<0>(i), get<1>(i));
+        }
+    }
     inline void putObjectConstBools(duk_idx_t obj, initializer_list<object_bool_value> init) {
         for(auto& i: init) {
             putObjectConstBool(obj, get<0>(i), get<1>(i));
+        }
+    }
+    inline void putObjectStrings(duk_idx_t obj, initializer_list<object_string_value> init) {
+        for(auto& i: init) {
+            putObjectString(obj, get<0>(i), get<1>(i));
         }
     }
     inline void putObjectConstStrings(duk_idx_t obj, initializer_list<object_string_value> init) {
@@ -520,435 +578,435 @@ public:
         return duk_peval_lstring(ctx, s.c_str(), s.length());
     }
     
-	class InvalidKeyException {
-	public:
-		InvalidKeyException(ofxDuktape *duk, const string& key, const string& description):
-			duk(duk),
-			key(key),
-			description(description) {}
-		ofxDuktape *duk;
-		string key;
-		string description;
-	};
-	class InvalidObjectException {
-	public:
-		InvalidObjectException(ofxDuktape *duk, int index, const string& description):
-			duk(duk), index(index), description(description) {}
-		ofxDuktape *duk;
-		int index;
-		string description;
-	};
-
-	inline int getGlobalStringInt(const string& key) {
-		if(getGlobalString(key))
-			return getInt(-1);
-		throw(InvalidKeyException(this, key, "not found in global object"));
-	}
-
-	inline int getGlobalStringUInt(const string& key) {
-		if(getGlobalString(key))
-			return getUint(-1);
-		throw(InvalidKeyException(this, key, "not found in global object"));
-	}
-
-	inline double getGlobalStringNumber(const string& key) {
-		if (getGlobalString(key)) {
-			return getNumber(-1);
-		}
-		throw(InvalidKeyException(this, key, "not found in global object"));
-	}
-
-	inline bool getGlobalStringBool(const string& key) {
-		if (getGlobalString(key)) {
-			return getBool(-1);
-		}
-		throw(InvalidKeyException(this, key, "not found in global object"));
-	}
-
-	inline string getGlobalStringString(const string& key) {
-		if (getGlobalString(key)) {
-			return getString(-1);
-		}
-		throw(InvalidKeyException(this, key, "not found in global object"));
-	}
-
-	inline void* getGlobalStringHeapPtr(const string& key) {
-		if (getGlobalString(key)) {
-			return getHeapPtr(-1);
-		}
-		throw(InvalidKeyException(this, key, "not found in global object"));
-	}
-
-	inline bool getObjectBool(duk_idx_t obj, const string& key) {
-		pushString(key);
-		if (getProp(obj)) {
-			return getBool(-1);
-		}
-		throw(InvalidKeyException(this, key, "not found in object"));
-	}
-	inline int getObjectInt(duk_idx_t obj, const string& key) {
-		pushString(key);
-		if (getProp(obj)) {
-			return getInt(-1);
-		}
-		throw(InvalidKeyException(this, key, "not found in object"));
-	}
-	inline double getObjectNumber(duk_idx_t obj, const string& key) {
-		pushString(key);
-		if (getProp(obj)) {
-			return getNumber(-1);
-		}
-		throw(InvalidKeyException(this, key, "not found in object"));
-	}
-	inline string getObjectString(duk_idx_t obj, const string& key) {
-		if (getPropString(obj, key)) {
-			return getString(-1);
-		}
-		throw(InvalidKeyException(this, key, "not found in object"));
-	}
-	inline string getObjectSafeString(duk_idx_t obj, const string& key) {
-		if (getPropString(obj, key)) {
-			return safeToString(-1);
-		}
-		throw(InvalidKeyException(this, key, "not found in object"));
-	}
-
-	inline void* getObjectHeapPtr(duk_idx_t obj, const string& key) {
-		if (getPropString(obj, key)) {
-			return getHeapPtr(-1);
-		}
-		throw(InvalidKeyException(this, key, "not found in object"));
-	}
-
-	inline bool isObjectPropUndefined(duk_idx_t obj, const string& key) {
-		if (getPropString(obj, key)) {
-			return isUndefined(-1);
-		}
-		throw(InvalidKeyException(this, key, "not found in object"));
-	}
-
-	inline bool isObjectPropNull(duk_idx_t obj, const string& key) {
-		if (getPropString(obj, key)) {
-			return isNull(-1);
-		}
-		throw(InvalidKeyException(this, key, "not found in object"));
-	}
-
-	inline bool isObjectPropArray(duk_idx_t obj, const string& key) {
-		if (getPropString(obj, key)) {
-			return isArray(-1);
-		}
-		throw(InvalidKeyException(this, key, "not found in object"));
-	}
-
-	inline bool isObjectPropObject(duk_idx_t obj, const string& key) {
-		if (getPropString(obj, key)) {
-			return isObject(-1);
-		}
-		throw(InvalidKeyException(this, key, "not found in object"));
-	}
-
-
-	inline bool isObjectPropBool(duk_idx_t obj, const string& key) {
-		if (getPropString(obj, key)) {
-			return isBoolean(-1);
-		}
-		throw(InvalidKeyException(this, key, "not found in object"));
-	}
-
-	inline bool isObjectPropNumber(duk_idx_t obj, const string& key) {
-		if (getPropString(obj, key)) {
-			return isNumber(-1);
-		}
-		throw(InvalidKeyException(this, key, "not found in object"));
-	}
-
-	inline bool isObjectPropBuffer(duk_idx_t obj, const string& key) {
-		if (getPropString(obj, key)) {
-			return isBuffer(-1);
-		}
-		throw(InvalidKeyException(this, key, "not found in object"));
-	}
-
-
-	
-
-	inline void putGlobalStringNull(const string& key) {
-		pushNull();
-		putGlobalString(key);
-	}
-
-	inline void putGlobalStringUndefined(const string& key) {
-		pushUndefined();
-		putGlobalString(key);
-	}
-
-	inline void putGlobalStringTrue(const string& key) {
-		pushTrue();
-		putGlobalString(key);
-	}
-
-	inline void putGlobalStringFalse(const string& key) {
-		pushFalse();
-		putGlobalString(key);
-	}
-
-	
-
-	inline void putGlobalStringString(const string& key, const string& str) {
-		pushString(str);
-		putGlobalString(key);
-	}
-	inline void putGlobalStringBool(const string& key, bool b) {
-		pushBool(b);
-		putGlobalString(key);
-	}
-	inline void putGlobalStringInt(const string& key, int i) {
-		pushInt(i);
-		putGlobalString(key);
-	}
-	inline void putGlobalStringNumber(const string& key, double d) {
-		pushNumber(d);
-		putGlobalString(key);
-	}
-	inline void putGlobalStringHeapPtr(const string& key, void* ptr) {
-		pushHeapPtr(ptr);
-		putGlobalString(key);
-	}
-
-	inline void putGlobalStringFunction(const string& key, cpp_function func, int arguments) {
-		pushFunction(func, arguments);
-		putGlobalString(key);
-	}
-
-	inline void putGlobalStringFixedBuffer(const string& key, int size, void** bufptr) {
-		*bufptr = pushFixedBuffer(size);
-		putGlobalString(key);
-	}
-
-	inline void putGlobalStringDynamicBuffer(const string& key, int initial_size, void** bufptr) {
-		*bufptr = pushDynamicBuffer(initial_size);
-		putGlobalString(key);
-	}
-
-	inline void putGlobalStringExternalBuffer(const string& key, void* ptr, size_t len) {
-		pushExternalBuffer(ptr, len);
-		putGlobalString(key);
-	}
-
-
-	inline void putObjectNull(duk_idx_t obj, const string& key) {
-		pushNull();
-		if (!putPropString(obj>=0?obj:obj - 1, key)) {
-			throw(InvalidObjectException(this, obj, "invalid object"));
-		}
-	}
-
-	inline void putObjectNull(duk_idx_t obj, duk_idx_t i) {
-		pushNull();
-		if (!putPropIndex(obj>=0?obj:obj - 1, i)) {
-			throw(InvalidObjectException(this, obj, "invalid object"));
-		}
-	}
-
-
-	inline void putObjectUndefined(duk_idx_t obj, const string& key) {
-		pushUndefined();
-		if (!putPropString(obj>=0?obj:obj - 1, key)) {
-			throw(InvalidObjectException(this, obj, "invalid object"));
-		}
-	}
-
-	inline void putObjectUndefined(duk_idx_t obj, duk_idx_t i) {
-		pushUndefined();
-		if (!putPropIndex(obj>=0?obj:obj - 1, i)) {
-			throw(InvalidObjectException(this, obj, "invalid object"));
-		}
-	}
-
-	inline void putObjectTrue(duk_idx_t obj, const string& key) {
-		pushTrue();
-		if (!putPropString(obj>=0?obj:obj - 1, key)) {
-			throw(InvalidObjectException(this, obj, "invalid object"));
-		}
-	}
-
-	inline void putObjectTrue(duk_idx_t obj, duk_idx_t i) {
-		pushTrue();
-		if (!putPropIndex(obj>=0?obj:obj - 1, i)) {
-			throw(InvalidObjectException(this, obj, "invalid object"));
-		}
-	}
-
-	inline void putObjectFalse(duk_idx_t obj, const string& key) {
-		pushFalse();
-		if (!putPropString(obj>=0?obj:obj - 1, key)) {
-			throw(InvalidObjectException(this, obj, "invalid object"));
-		}
-	}
-
-	inline void putObjectFalse(duk_idx_t obj, duk_idx_t i) {
-		pushFalse();
-		if (!putPropIndex(obj>=0?obj:obj - 1, i)) {
-			throw(InvalidObjectException(this, obj, "invalid object"));
-		}
-	}
-
-	inline void putObjectBool(duk_idx_t obj, const string&key, bool b) {
-		pushBool(b);
-		if (!putPropString(obj>=0?obj:obj - 1, key)) {
-			throw(InvalidObjectException(this, obj, "invalid object"));
-		}
-	}
-
-	inline void putObjectBool(duk_idx_t obj, duk_idx_t i, bool b) {
-		pushBool(b);
-		if (!putPropIndex(obj>=0?obj:obj - 1, i)) {
-			throw(InvalidObjectException(this, obj, "invalid object"));
-		}
-	}
-
-	inline void putObjectInt(duk_idx_t obj, const string&key, int i) {
-		pushInt(i);
-		if (!putPropString(obj>=0?obj:obj - 1, key)) {
-			throw(InvalidObjectException(this, obj, "invalid object"));
-		}
-	}
-
-	inline void putObjectInt(duk_idx_t obj, duk_idx_t i, int n) {
-		pushInt(n);
-		if (!putPropIndex(obj>=0?obj:obj - 1, i)) {
-			throw(InvalidObjectException(this, obj, "invalid object"));
-		}
-	}
-
-	inline void putObjectNumber(duk_idx_t obj, const string&key, double d) {
-		pushNumber(d);
-		if (!putPropString(obj>=0?obj:obj - 1, key)) {
-			throw(InvalidObjectException(this, obj, "invalid object"));
-		}
-	}
-	
-	inline void putObjectNumber(duk_idx_t obj, duk_idx_t i, double d) {
-		pushNumber(d);
-		if (!putPropIndex(obj>=0?obj:obj - 1, i)) {
-			throw(InvalidObjectException(this, obj, "invalid object"));
-		}
-	}
-
-	inline void putObjectString(duk_idx_t obj, const string&key, const string& value) {
-		pushString(value);
-		if (!putPropString(obj>=0?obj:obj - 1, key)) {
-			throw(InvalidObjectException(this, obj, "invalid object"));
-		}
-	}
-
-	inline void putObjectString(duk_idx_t obj, duk_idx_t i, const string& value) {
-		pushString(value);
-		if (!putPropIndex(obj>=0?obj:obj - 1, i)) {
-			throw(InvalidObjectException(this, obj, "invalid object"));
-		}
-	}
-
-	inline void putObjectHeapPtr(duk_idx_t obj, const string& key, void* ptr) {
-		pushHeapPtr(ptr);
-		if (!putPropString(obj>=0?obj:obj - 1, key)) {
-			throw(InvalidObjectException(this, obj, "invalid object"));
-		}
-	}
-
-	inline void putObjectHeapPtr(duk_idx_t obj, duk_idx_t i, void* ptr) {
-		pushHeapPtr(ptr);
-		if (!putPropIndex(obj>=0?obj:obj - 1, i)) {
-			throw(InvalidObjectException(this, obj, "invalid object"));
-		}
-	}
-
-	inline void putObjectFunction(duk_idx_t obj, const string& key, cpp_function func, int args) {
-		pushFunction(func, args);
-		if (!putPropString(obj>=0?obj:obj - 1, key)) {
-			throw(InvalidObjectException(this, obj, "invalid object"));
-		}
-	}
-
-	inline void putObjectFunction(duk_idx_t obj, duk_idx_t key, cpp_function func, int args) {
-		pushFunction(func, args);
-		if (!putPropIndex(obj>=0?obj:obj - 1, key)) {
-			throw(InvalidObjectException(this, obj, "invalid object"));
-		}
-	}
-
-	inline void putObjectDynamicBuffer(duk_idx_t obj, const string& key, int initial_size, void** bufptr) {
-		*bufptr = pushDynamicBuffer(initial_size);
-		if (!putPropString(obj>=0?obj:obj - 1, key)) {
-			throw(InvalidObjectException(this, obj, "invalid object"));
-		}
-	}
-
-	inline void putObjectDynamicBuffer(duk_idx_t obj, duk_idx_t key, int initial_size, void** bufptr) {
-		*bufptr = pushDynamicBuffer(initial_size);
-		if (!putPropIndex(obj>=0?obj:obj - 1, key)) {
-			throw(InvalidObjectException(this, obj, "invalid object"));
-		}
-	}
-
-	inline void putObjectFixedBuffer(duk_idx_t obj, const string& key, int size, void** bufptr) {
-		*bufptr = pushFixedBuffer(size);
-		if (!putPropString(obj>=0?obj:obj - 1, key)) {
-			throw(InvalidObjectException(this, obj, "invalid object"));
-		}
-	}
-
-	inline void putObjectFixedBuffer(duk_idx_t obj, duk_idx_t key, int size, void** bufptr) {
-		*bufptr = pushFixedBuffer(size);
-		if (!putPropIndex(obj>=0?obj:obj - 1, key)) {
-			throw(InvalidObjectException(this, obj, "invalid object"));
-		}
-	}
-
-	inline void putObjectExternalBuffer(duk_idx_t obj, const string& key, void* ptr, size_t len) {
-		pushExternalBuffer(ptr, len);
-		if (!putPropString(obj>=0?obj:obj - 1, key)) {
-			throw(InvalidObjectException(this, obj, "invalid object"));
-		}
-	}
-
-	inline void putObjectExternalBuffer(duk_idx_t obj, duk_idx_t key, void* ptr, size_t len) {
-		pushExternalBuffer(ptr, len);
-		if (!putPropIndex(obj>=0?obj:obj - 1, key)) {
-			throw(InvalidObjectException(this, obj, "invalid object"));
-		}
-	}
-
-	inline void putObjectGlobalStash(duk_idx_t obj, const string& key) {
-		pushGlobalStash();
-		if (!putPropString(obj >= 0 ? obj : obj - 1, key)) {
-			throw(InvalidObjectException(this, obj, "invalid object"));
-		}
-	}
-
-	inline void putObjectGlobalStash(duk_idx_t obj, duk_idx_t key) {
-		pushGlobalStash();
-		if (!putPropIndex(obj >= 0 ? obj : obj - 1, key)) {
-			throw(InvalidObjectException(this, obj, "invalid object"));
-		}
-	}
-
-	inline void putObjectHeapStash(duk_idx_t obj, const string& key) {
-		pushHeapStash();
-		if (!putPropString(obj >= 0 ? obj : obj - 1, key)) {
-			throw(InvalidObjectException(this, obj, "invalid object"));
-		}
-	}
-
-	inline void putObjectHeapStash(duk_idx_t obj, duk_idx_t key) {
-		pushHeapStash();
-		if (!putPropIndex(obj >= 0 ? obj : obj - 1, key)) {
-			throw(InvalidObjectException(this, obj, "invalid object"));
-		}
-	}
-
-
+    class InvalidKeyException {
+    public:
+        InvalidKeyException(ofxDuktape *duk, const string& key, const string& description):
+        duk(duk),
+        key(key),
+        description(description) {}
+        ofxDuktape *duk;
+        string key;
+        string description;
+    };
+    class InvalidObjectException {
+    public:
+        InvalidObjectException(ofxDuktape *duk, int index, const string& description):
+        duk(duk), index(index), description(description) {}
+        ofxDuktape *duk;
+        int index;
+        string description;
+    };
+    
+    inline int getGlobalStringInt(const string& key) {
+        if(getGlobalString(key))
+            return getInt(-1);
+        throw(InvalidKeyException(this, key, "not found in global object"));
+    }
+    
+    inline int getGlobalStringUInt(const string& key) {
+        if(getGlobalString(key))
+            return getUint(-1);
+        throw(InvalidKeyException(this, key, "not found in global object"));
+    }
+    
+    inline double getGlobalStringNumber(const string& key) {
+        if (getGlobalString(key)) {
+            return getNumber(-1);
+        }
+        throw(InvalidKeyException(this, key, "not found in global object"));
+    }
+    
+    inline bool getGlobalStringBool(const string& key) {
+        if (getGlobalString(key)) {
+            return getBool(-1);
+        }
+        throw(InvalidKeyException(this, key, "not found in global object"));
+    }
+    
+    inline string getGlobalStringString(const string& key) {
+        if (getGlobalString(key)) {
+            return getString(-1);
+        }
+        throw(InvalidKeyException(this, key, "not found in global object"));
+    }
+    
+    inline void* getGlobalStringHeapPtr(const string& key) {
+        if (getGlobalString(key)) {
+            return getHeapPtr(-1);
+        }
+        throw(InvalidKeyException(this, key, "not found in global object"));
+    }
+    
+    inline bool getObjectBool(duk_idx_t obj, const string& key) {
+        pushString(key);
+        if (getProp(obj)) {
+            return getBool(-1);
+        }
+        throw(InvalidKeyException(this, key, "not found in object"));
+    }
+    inline int getObjectInt(duk_idx_t obj, const string& key) {
+        pushString(key);
+        if (getProp(obj)) {
+            return getInt(-1);
+        }
+        throw(InvalidKeyException(this, key, "not found in object"));
+    }
+    inline double getObjectNumber(duk_idx_t obj, const string& key) {
+        pushString(key);
+        if (getProp(obj)) {
+            return getNumber(-1);
+        }
+        throw(InvalidKeyException(this, key, "not found in object"));
+    }
+    inline string getObjectString(duk_idx_t obj, const string& key) {
+        if (getPropString(obj, key)) {
+            return getString(-1);
+        }
+        throw(InvalidKeyException(this, key, "not found in object"));
+    }
+    inline string getObjectSafeString(duk_idx_t obj, const string& key) {
+        if (getPropString(obj, key)) {
+            return safeToString(-1);
+        }
+        throw(InvalidKeyException(this, key, "not found in object"));
+    }
+    
+    inline void* getObjectHeapPtr(duk_idx_t obj, const string& key) {
+        if (getPropString(obj, key)) {
+            return getHeapPtr(-1);
+        }
+        throw(InvalidKeyException(this, key, "not found in object"));
+    }
+    
+    inline bool isObjectPropUndefined(duk_idx_t obj, const string& key) {
+        if (getPropString(obj, key)) {
+            return isUndefined(-1);
+        }
+        throw(InvalidKeyException(this, key, "not found in object"));
+    }
+    
+    inline bool isObjectPropNull(duk_idx_t obj, const string& key) {
+        if (getPropString(obj, key)) {
+            return isNull(-1);
+        }
+        throw(InvalidKeyException(this, key, "not found in object"));
+    }
+    
+    inline bool isObjectPropArray(duk_idx_t obj, const string& key) {
+        if (getPropString(obj, key)) {
+            return isArray(-1);
+        }
+        throw(InvalidKeyException(this, key, "not found in object"));
+    }
+    
+    inline bool isObjectPropObject(duk_idx_t obj, const string& key) {
+        if (getPropString(obj, key)) {
+            return isObject(-1);
+        }
+        throw(InvalidKeyException(this, key, "not found in object"));
+    }
+    
+    
+    inline bool isObjectPropBool(duk_idx_t obj, const string& key) {
+        if (getPropString(obj, key)) {
+            return isBoolean(-1);
+        }
+        throw(InvalidKeyException(this, key, "not found in object"));
+    }
+    
+    inline bool isObjectPropNumber(duk_idx_t obj, const string& key) {
+        if (getPropString(obj, key)) {
+            return isNumber(-1);
+        }
+        throw(InvalidKeyException(this, key, "not found in object"));
+    }
+    
+    inline bool isObjectPropBuffer(duk_idx_t obj, const string& key) {
+        if (getPropString(obj, key)) {
+            return isBuffer(-1);
+        }
+        throw(InvalidKeyException(this, key, "not found in object"));
+    }
+    
+    
+    
+    
+    inline void putGlobalStringNull(const string& key) {
+        pushNull();
+        putGlobalString(key);
+    }
+    
+    inline void putGlobalStringUndefined(const string& key) {
+        pushUndefined();
+        putGlobalString(key);
+    }
+    
+    inline void putGlobalStringTrue(const string& key) {
+        pushTrue();
+        putGlobalString(key);
+    }
+    
+    inline void putGlobalStringFalse(const string& key) {
+        pushFalse();
+        putGlobalString(key);
+    }
+    
+    
+    
+    inline void putGlobalStringString(const string& key, const string& str) {
+        pushString(str);
+        putGlobalString(key);
+    }
+    inline void putGlobalStringBool(const string& key, bool b) {
+        pushBool(b);
+        putGlobalString(key);
+    }
+    inline void putGlobalStringInt(const string& key, int i) {
+        pushInt(i);
+        putGlobalString(key);
+    }
+    inline void putGlobalStringNumber(const string& key, double d) {
+        pushNumber(d);
+        putGlobalString(key);
+    }
+    inline void putGlobalStringHeapPtr(const string& key, void* ptr) {
+        pushHeapPtr(ptr);
+        putGlobalString(key);
+    }
+    
+    inline void putGlobalStringFunction(const string& key, cpp_function func, int arguments) {
+        pushFunction(func, arguments);
+        putGlobalString(key);
+    }
+    
+    inline void putGlobalStringFixedBuffer(const string& key, int size, void** bufptr) {
+        *bufptr = pushFixedBuffer(size);
+        putGlobalString(key);
+    }
+    
+    inline void putGlobalStringDynamicBuffer(const string& key, int initial_size, void** bufptr) {
+        *bufptr = pushDynamicBuffer(initial_size);
+        putGlobalString(key);
+    }
+    
+    inline void putGlobalStringExternalBuffer(const string& key, void* ptr, size_t len) {
+        pushExternalBuffer(ptr, len);
+        putGlobalString(key);
+    }
+    
+    
+    inline void putObjectNull(duk_idx_t obj, const string& key) {
+        pushNull();
+        if (!putPropString(obj>=0?obj:obj - 1, key)) {
+            throw(InvalidObjectException(this, obj, "invalid object"));
+        }
+    }
+    
+    inline void putObjectNull(duk_idx_t obj, duk_idx_t i) {
+        pushNull();
+        if (!putPropIndex(obj>=0?obj:obj - 1, i)) {
+            throw(InvalidObjectException(this, obj, "invalid object"));
+        }
+    }
+    
+    
+    inline void putObjectUndefined(duk_idx_t obj, const string& key) {
+        pushUndefined();
+        if (!putPropString(obj>=0?obj:obj - 1, key)) {
+            throw(InvalidObjectException(this, obj, "invalid object"));
+        }
+    }
+    
+    inline void putObjectUndefined(duk_idx_t obj, duk_idx_t i) {
+        pushUndefined();
+        if (!putPropIndex(obj>=0?obj:obj - 1, i)) {
+            throw(InvalidObjectException(this, obj, "invalid object"));
+        }
+    }
+    
+    inline void putObjectTrue(duk_idx_t obj, const string& key) {
+        pushTrue();
+        if (!putPropString(obj>=0?obj:obj - 1, key)) {
+            throw(InvalidObjectException(this, obj, "invalid object"));
+        }
+    }
+    
+    inline void putObjectTrue(duk_idx_t obj, duk_idx_t i) {
+        pushTrue();
+        if (!putPropIndex(obj>=0?obj:obj - 1, i)) {
+            throw(InvalidObjectException(this, obj, "invalid object"));
+        }
+    }
+    
+    inline void putObjectFalse(duk_idx_t obj, const string& key) {
+        pushFalse();
+        if (!putPropString(obj>=0?obj:obj - 1, key)) {
+            throw(InvalidObjectException(this, obj, "invalid object"));
+        }
+    }
+    
+    inline void putObjectFalse(duk_idx_t obj, duk_idx_t i) {
+        pushFalse();
+        if (!putPropIndex(obj>=0?obj:obj - 1, i)) {
+            throw(InvalidObjectException(this, obj, "invalid object"));
+        }
+    }
+    
+    inline void putObjectBool(duk_idx_t obj, const string&key, bool b) {
+        pushBool(b);
+        if (!putPropString(obj>=0?obj:obj - 1, key)) {
+            throw(InvalidObjectException(this, obj, "invalid object"));
+        }
+    }
+    
+    inline void putObjectBool(duk_idx_t obj, duk_idx_t i, bool b) {
+        pushBool(b);
+        if (!putPropIndex(obj>=0?obj:obj - 1, i)) {
+            throw(InvalidObjectException(this, obj, "invalid object"));
+        }
+    }
+    
+    inline void putObjectInt(duk_idx_t obj, const string&key, int i) {
+        pushInt(i);
+        if (!putPropString(obj>=0?obj:obj - 1, key)) {
+            throw(InvalidObjectException(this, obj, "invalid object"));
+        }
+    }
+    
+    inline void putObjectInt(duk_idx_t obj, duk_idx_t i, int n) {
+        pushInt(n);
+        if (!putPropIndex(obj>=0?obj:obj - 1, i)) {
+            throw(InvalidObjectException(this, obj, "invalid object"));
+        }
+    }
+    
+    inline void putObjectNumber(duk_idx_t obj, const string&key, double d) {
+        pushNumber(d);
+        if (!putPropString(obj>=0?obj:obj - 1, key)) {
+            throw(InvalidObjectException(this, obj, "invalid object"));
+        }
+    }
+    
+    inline void putObjectNumber(duk_idx_t obj, duk_idx_t i, double d) {
+        pushNumber(d);
+        if (!putPropIndex(obj>=0?obj:obj - 1, i)) {
+            throw(InvalidObjectException(this, obj, "invalid object"));
+        }
+    }
+    
+    inline void putObjectString(duk_idx_t obj, const string&key, const string& value) {
+        pushString(value);
+        if (!putPropString(obj>=0?obj:obj - 1, key)) {
+            throw(InvalidObjectException(this, obj, "invalid object"));
+        }
+    }
+    
+    inline void putObjectString(duk_idx_t obj, duk_idx_t i, const string& value) {
+        pushString(value);
+        if (!putPropIndex(obj>=0?obj:obj - 1, i)) {
+            throw(InvalidObjectException(this, obj, "invalid object"));
+        }
+    }
+    
+    inline void putObjectHeapPtr(duk_idx_t obj, const string& key, void* ptr) {
+        pushHeapPtr(ptr);
+        if (!putPropString(obj>=0?obj:obj - 1, key)) {
+            throw(InvalidObjectException(this, obj, "invalid object"));
+        }
+    }
+    
+    inline void putObjectHeapPtr(duk_idx_t obj, duk_idx_t i, void* ptr) {
+        pushHeapPtr(ptr);
+        if (!putPropIndex(obj>=0?obj:obj - 1, i)) {
+            throw(InvalidObjectException(this, obj, "invalid object"));
+        }
+    }
+    
+    inline void putObjectFunction(duk_idx_t obj, const string& key, cpp_function func, int args) {
+        pushFunction(func, args);
+        if (!putPropString(obj>=0?obj:obj - 1, key)) {
+            throw(InvalidObjectException(this, obj, "invalid object"));
+        }
+    }
+    
+    inline void putObjectFunction(duk_idx_t obj, duk_idx_t key, cpp_function func, int args) {
+        pushFunction(func, args);
+        if (!putPropIndex(obj>=0?obj:obj - 1, key)) {
+            throw(InvalidObjectException(this, obj, "invalid object"));
+        }
+    }
+    
+    inline void putObjectDynamicBuffer(duk_idx_t obj, const string& key, int initial_size, void** bufptr) {
+        *bufptr = pushDynamicBuffer(initial_size);
+        if (!putPropString(obj>=0?obj:obj - 1, key)) {
+            throw(InvalidObjectException(this, obj, "invalid object"));
+        }
+    }
+    
+    inline void putObjectDynamicBuffer(duk_idx_t obj, duk_idx_t key, int initial_size, void** bufptr) {
+        *bufptr = pushDynamicBuffer(initial_size);
+        if (!putPropIndex(obj>=0?obj:obj - 1, key)) {
+            throw(InvalidObjectException(this, obj, "invalid object"));
+        }
+    }
+    
+    inline void putObjectFixedBuffer(duk_idx_t obj, const string& key, int size, void** bufptr) {
+        *bufptr = pushFixedBuffer(size);
+        if (!putPropString(obj>=0?obj:obj - 1, key)) {
+            throw(InvalidObjectException(this, obj, "invalid object"));
+        }
+    }
+    
+    inline void putObjectFixedBuffer(duk_idx_t obj, duk_idx_t key, int size, void** bufptr) {
+        *bufptr = pushFixedBuffer(size);
+        if (!putPropIndex(obj>=0?obj:obj - 1, key)) {
+            throw(InvalidObjectException(this, obj, "invalid object"));
+        }
+    }
+    
+    inline void putObjectExternalBuffer(duk_idx_t obj, const string& key, void* ptr, size_t len) {
+        pushExternalBuffer(ptr, len);
+        if (!putPropString(obj>=0?obj:obj - 1, key)) {
+            throw(InvalidObjectException(this, obj, "invalid object"));
+        }
+    }
+    
+    inline void putObjectExternalBuffer(duk_idx_t obj, duk_idx_t key, void* ptr, size_t len) {
+        pushExternalBuffer(ptr, len);
+        if (!putPropIndex(obj>=0?obj:obj - 1, key)) {
+            throw(InvalidObjectException(this, obj, "invalid object"));
+        }
+    }
+    
+    inline void putObjectGlobalStash(duk_idx_t obj, const string& key) {
+        pushGlobalStash();
+        if (!putPropString(obj >= 0 ? obj : obj - 1, key)) {
+            throw(InvalidObjectException(this, obj, "invalid object"));
+        }
+    }
+    
+    inline void putObjectGlobalStash(duk_idx_t obj, duk_idx_t key) {
+        pushGlobalStash();
+        if (!putPropIndex(obj >= 0 ? obj : obj - 1, key)) {
+            throw(InvalidObjectException(this, obj, "invalid object"));
+        }
+    }
+    
+    inline void putObjectHeapStash(duk_idx_t obj, const string& key) {
+        pushHeapStash();
+        if (!putPropString(obj >= 0 ? obj : obj - 1, key)) {
+            throw(InvalidObjectException(this, obj, "invalid object"));
+        }
+    }
+    
+    inline void putObjectHeapStash(duk_idx_t obj, duk_idx_t key) {
+        pushHeapStash();
+        if (!putPropIndex(obj >= 0 ? obj : obj - 1, key)) {
+            throw(InvalidObjectException(this, obj, "invalid object"));
+        }
+    }
+    
+    
 };
 
 
