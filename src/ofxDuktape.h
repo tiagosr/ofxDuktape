@@ -5,8 +5,7 @@
 //  (c)2015 Tiago Rezende (@tiagosr)
 //
 
-#ifndef __ofxDuktape__
-#define __ofxDuktape__
+#pragma once
 
 #define DUK_USE_CPP_EXCEPTIONS
 #include "ofMain.h"
@@ -28,8 +27,11 @@ public:
     ofxDuktape();
     // constructs an object as a thread of the first
     ofxDuktape(ofxDuktape *parent, bool newenv=false);
+    ofxDuktape(ofxDuktape *parent, duk_context *other_ctx);
     virtual ~ofxDuktape();
     ofEvent<ErrorData> onFatalError;
+    
+    void threadSetup();
     
     // triggers a round of garbage collection
     inline void gc() { duk_gc(ctx, 0); }
@@ -253,6 +255,9 @@ public:
     
     // pushes current function object into the top of the stack
     inline void pushCurrentFunction() { duk_push_current_function(ctx); }
+    
+    // pushes a new thread (along with an ofxDuktape context)
+    duk_idx_t pushThread();
     
     // safe getters
     
@@ -1050,5 +1055,3 @@ public:
     
 };
 
-
-#endif /* defined(__ofxDuktape__) */

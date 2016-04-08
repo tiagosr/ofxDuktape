@@ -23,12 +23,36 @@ static void ofxDuktapeFatal(duk_context *ctx, duk_errcode_t code, const char* ms
     
 }
 
+void ofxDuktape::threadSetup() {
+    duk_idx_t thread = pushThread();
+    putObjectHeapPtr(thread, ofxDuktapeProp, (void*)this);
+    setFinalizerFunction(thread, [](ofxDuktape&duk) {
+        ofxDuktape *dduk = static_cast<ofxDuktape*>(duk.getObjectHeapPtr(0, ofxDuktapeProp));
+        if(dduk) delete dduk;
+        duk.putObjectHeapPtr(0, ofxDuktapeProp, 0);
+        return 0;
+    });
+    pop();
+}
+
+duk_idx_t ofxDuktape::pushThread() {
+    duk_idx_t thread = duk_push_thread(ctx);
+    duk_context *octx = duk_get_context(ctx, thread);
+    if(octx) {
+        ofxDuktape *duk = static_cast<ofxDuktape*>(getObjectHeapPtr(thread, ofxDuktapeProp));
+        if(!duk) {
+            duk = new ofxDuktape(this, octx);
+        }
+    }
+    return thread;
+}
 ofxDuktape::ofxDuktape(): ctx(NULL) {
     ctx = duk_create_heap((duk_alloc_function)ofxDuktapeMalloc,
                           (duk_realloc_function)ofxDuktapeRealloc,
                           (duk_free_function)ofxDuktapeFree,
                           (void*)this,
                           (duk_fatal_function)ofxDuktapeFatal);
+    threadSetup();
 }
 
 ofxDuktape::ofxDuktape(ofxDuktape*parent, bool newenv) {
@@ -46,9 +70,17 @@ ofxDuktape::ofxDuktape(ofxDuktape*parent, bool newenv) {
                               (void*)this,
                               (duk_fatal_function)ofxDuktapeFatal);
     }
+    threadSetup();
+}
+ofxDuktape::ofxDuktape(ofxDuktape*parent, duk_context *other_ctx) {
+    ctx = other_ctx;
+    threadSetup();
 }
 
 ofxDuktape::~ofxDuktape() {
+    duk_idx_t thread = pushThread();
+    // clear internal pointer to avoid double-freeing oneself
+    putObjectHeapPtr(thread, ofxDuktapeProp, 0);
     duk_destroy_heap(ctx);
 }
 
