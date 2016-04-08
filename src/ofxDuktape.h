@@ -244,6 +244,10 @@ public:
         duk_push_external_buffer(ctx);
         duk_config_buffer(ctx, -1, ptr, len);
     }
+    // pushes a buffer object or a buffer view object, with data from the buffer object
+    inline void pushBufferObject(duk_idx_t buf, duk_size_t offset, duk_size_t byte_length, duk_uint_t flags) {
+        duk_push_buffer_object(ctx, buf, offset, byte_length, flags);
+    }
     // pushes a C function with a user-given pointer to the top of the stack
     void pushCFunction(c_function func, int arguments, void* userdata);
     
@@ -258,6 +262,16 @@ public:
     
     // pushes a new thread (along with an ofxDuktape context)
     duk_idx_t pushThread();
+    
+    // pushes a short description of the current context to the stack
+    inline void pushContextDump() { duk_push_context_dump(ctx); }
+    
+    // gets a string with the current context dump
+    inline string getContextDump() {
+        pushContextDump();
+        return toString(-1);
+    }
+    
     
     // safe getters
     
