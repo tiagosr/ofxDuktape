@@ -467,31 +467,32 @@ public:
                               [&](ofxDuktape& duk) { param = duk.toBool(0); return 0; }
                               );
     }
-
-
+    
+    
     
     inline void putObjectConstInt(duk_idx_t obj, const string& key, int value) {
         obj = normalizeIndex(obj);
         pushString(key);
         pushInt(value);
-        defineProperty(obj, 0); // set read-only
+        defineProperty(obj, DUK_DEFPROP_HAVE_VALUE | DUK_DEFPROP_HAVE_WRITABLE); // set read-only
     }
     inline void putObjectConstNumber(duk_idx_t obj, const string& key, double value) {
         obj = normalizeIndex(obj);
         pushString(key);
         pushNumber(value);
-        defineProperty(obj, 0); // set read-only
+        defineProperty(obj, DUK_DEFPROP_HAVE_VALUE | DUK_DEFPROP_HAVE_WRITABLE); // set read-only
     }
     inline void putObjectConstString(duk_idx_t obj, const string& key, const string& value) {
         obj = normalizeIndex(obj);
         pushString(key);
         pushString(value);
-        defineProperty(obj, 0); // set read-only
+        defineProperty(obj, DUK_DEFPROP_HAVE_VALUE | DUK_DEFPROP_HAVE_WRITABLE); // set read-only
     }
     inline void putObjectConstBool(duk_idx_t obj, const string& key, bool value) {
+        obj = normalizeIndex(obj);
         pushString(key);
         pushBool(value);
-        defineProperty(obj>=0? obj:obj-2, 0); // set read-only
+        defineProperty(obj, DUK_DEFPROP_HAVE_VALUE | DUK_DEFPROP_HAVE_WRITABLE); // set read-only
     }
     
     struct object_function_value {
@@ -660,6 +661,17 @@ public:
         string key;
         string description;
     };
+    class InvalidIndexException {
+    public:
+        InvalidIndexException(ofxDuktape *duk, duk_idx_t index, const string& description):
+        duk(duk),
+        index(index),
+        description(description) {}
+        ofxDuktape *duk;
+        duk_idx_t index;
+        string description;
+    };
+    
     class InvalidObjectException {
     public:
         InvalidObjectException(ofxDuktape *duk, int index, const string& description):
@@ -710,19 +722,32 @@ public:
     }
     
     inline bool getObjectBool(duk_idx_t obj, const string& key) {
-        pushString(key);
-        if (getProp(obj)) {
+        if (getPropString(obj, key)) {
             return getBool(-1);
         }
         throw(InvalidKeyException(this, key, "not found in object"));
     }
+    inline bool getObjectBool(duk_idx_t obj, duk_idx_t index) {
+        if(getPropIndex(obj, index)) {
+            return getBool(-1);
+        }
+        throw(InvalidIndexException(this, index, "not found in object"));
+    }
+    
+    
     inline int getObjectInt(duk_idx_t obj, const string& key) {
-        pushString(key);
-        if (getProp(obj)) {
+        if (getPropString(obj, key)) {
             return getInt(-1);
         }
         throw(InvalidKeyException(this, key, "not found in object"));
     }
+    inline int getObjectInt(duk_idx_t obj, duk_idx_t index) {
+        if(getPropIndex(obj, index)) {
+            return getInt(-1);
+        }
+        throw(InvalidIndexException(this, index, "not found in object"));
+    }
+    
     inline double getObjectNumber(duk_idx_t obj, const string& key) {
         pushString(key);
         if (getProp(obj)) {
@@ -730,17 +755,37 @@ public:
         }
         throw(InvalidKeyException(this, key, "not found in object"));
     }
+    inline double getObjectNumber(duk_idx_t obj, duk_idx_t index) {
+        if(getPropIndex(obj, index)) {
+            return getNumber(-1);
+        }
+        throw(InvalidIndexException(this, index, "not found in object"));
+    }
+
     inline string getObjectString(duk_idx_t obj, const string& key) {
         if (getPropString(obj, key)) {
             return getString(-1);
         }
         throw(InvalidKeyException(this, key, "not found in object"));
     }
+    inline string getObjectString(duk_idx_t obj, duk_idx_t index) {
+        if (getPropIndex(obj, index)) {
+            return getString(-1);
+        }
+        throw(InvalidIndexException(this, index, "not found in object"));
+    }
+    
     inline string getObjectSafeString(duk_idx_t obj, const string& key) {
         if (getPropString(obj, key)) {
             return safeToString(-1);
         }
         throw(InvalidKeyException(this, key, "not found in object"));
+    }
+    inline string getObjectSafeString(duk_idx_t obj, duk_idx_t index) {
+        if (getPropIndex(obj, index)) {
+            return safeToString(-1);
+        }
+        throw(InvalidIndexException(this, index, "not found in object"));
     }
     
     inline void* getObjectHeapPtr(duk_idx_t obj, const string& key) {
@@ -749,7 +794,40 @@ public:
         }
         throw(InvalidKeyException(this, key, "not found in object"));
     }
+    inline void* getObjectHeapPtr(duk_idx_t obj, duk_idx_t index) {
+        if (getPropIndex(obj, index)) {
+            return getHeapPtr(-1);
+        }
+        throw(InvalidIndexException(this, index, "not found in object"));
+    }
     
+    inline void* getObjectBuffer(duk_idx_t obj, const string& key, size_t& buf_size) {
+        if (getPropString(obj, key)) {
+            return getBuffer(-1, &buf_size);
+        }
+        throw(InvalidKeyException(this, key, "not found in object"));
+    }
+    inline void* getObjectBuffer(duk_idx_t obj, duk_idx_t index, size_t& buf_size) {
+        if (getPropIndex(obj, index)) {
+            return getBuffer(-1, &buf_size);
+        }
+        throw(InvalidIndexException(this, index, "not found in object"));
+    }
+    
+    inline duk_idx_t getObjectObject(duk_idx_t obj, const string& key) {
+        if (getPropString(obj, key)) {
+            return normalizeIndex(-1);
+        }
+        throw(InvalidKeyException(this, key, "not found in object"));
+    }
+
+    inline duk_idx_t getObjectObject(duk_idx_t obj, duk_int_t index) {
+        if (getPropIndex(obj, index)) {
+            return normalizeIndex(-1);
+        }
+        throw(InvalidIndexException(this, index, "not found in object"));
+    }
+
     inline bool isObjectPropUndefined(duk_idx_t obj, const string& key) {
         if (getPropString(obj, key)) {
             return isUndefined(-1);
