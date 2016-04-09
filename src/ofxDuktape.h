@@ -682,201 +682,183 @@ public:
     };
     
     inline int getGlobalStringInt(const string& key) {
-        if(getGlobalString(key))
-            return getInt(-1);
+        if(getGlobalString(key)) return getInt(-1);
         throw(InvalidKeyException(this, key, "not found in global object"));
     }
     
     inline int getGlobalStringUInt(const string& key) {
-        if(getGlobalString(key))
-            return getUint(-1);
+        if(getGlobalString(key)) return getUint(-1);
         throw(InvalidKeyException(this, key, "not found in global object"));
     }
     
     inline double getGlobalStringNumber(const string& key) {
-        if (getGlobalString(key)) {
-            return getNumber(-1);
-        }
+        if (getGlobalString(key)) return getNumber(-1);
         throw(InvalidKeyException(this, key, "not found in global object"));
     }
     
     inline bool getGlobalStringBool(const string& key) {
-        if (getGlobalString(key)) {
-            return getBool(-1);
-        }
+        if (getGlobalString(key)) return getBool(-1);
         throw(InvalidKeyException(this, key, "not found in global object"));
     }
     
     inline string getGlobalStringString(const string& key) {
-        if (getGlobalString(key)) {
-            return getString(-1);
-        }
+        if (getGlobalString(key)) return getString(-1);
         throw(InvalidKeyException(this, key, "not found in global object"));
     }
     
     inline void* getGlobalStringHeapPtr(const string& key) {
-        if (getGlobalString(key)) {
-            return getHeapPtr(-1);
-        }
+        if (getGlobalString(key)) return getHeapPtr(-1);
         throw(InvalidKeyException(this, key, "not found in global object"));
     }
     
     inline bool getObjectBool(duk_idx_t obj, const string& key) {
-        if (getPropString(obj, key)) {
-            return getBool(-1);
-        }
+        if (getPropString(obj, key)) return getBool(-1);
         throw(InvalidKeyException(this, key, "not found in object"));
     }
     inline bool getObjectBool(duk_idx_t obj, duk_idx_t index) {
-        if(getPropIndex(obj, index)) {
-            return getBool(-1);
-        }
+        if(getPropIndex(obj, index)) return getBool(-1);
         throw(InvalidIndexException(this, index, "not found in object"));
     }
     
     
     inline int getObjectInt(duk_idx_t obj, const string& key) {
-        if (getPropString(obj, key)) {
-            return getInt(-1);
-        }
+        if (getPropString(obj, key)) return getInt(-1);
         throw(InvalidKeyException(this, key, "not found in object"));
     }
     inline int getObjectInt(duk_idx_t obj, duk_idx_t index) {
-        if(getPropIndex(obj, index)) {
-            return getInt(-1);
-        }
+        if(getPropIndex(obj, index)) return getInt(-1);
         throw(InvalidIndexException(this, index, "not found in object"));
     }
     
     inline double getObjectNumber(duk_idx_t obj, const string& key) {
-        pushString(key);
-        if (getProp(obj)) {
-            return getNumber(-1);
-        }
+        if (getPropString(obj, key)) return getNumber(-1);
         throw(InvalidKeyException(this, key, "not found in object"));
     }
     inline double getObjectNumber(duk_idx_t obj, duk_idx_t index) {
-        if(getPropIndex(obj, index)) {
-            return getNumber(-1);
-        }
+        if(getPropIndex(obj, index)) return getNumber(-1);
         throw(InvalidIndexException(this, index, "not found in object"));
     }
 
     inline string getObjectString(duk_idx_t obj, const string& key) {
-        if (getPropString(obj, key)) {
-            return getString(-1);
-        }
+        if (getPropString(obj, key)) return getString(-1);
         throw(InvalidKeyException(this, key, "not found in object"));
     }
     inline string getObjectString(duk_idx_t obj, duk_idx_t index) {
-        if (getPropIndex(obj, index)) {
-            return getString(-1);
-        }
+        if (getPropIndex(obj, index)) return getString(-1);
         throw(InvalidIndexException(this, index, "not found in object"));
     }
     
     inline string getObjectSafeString(duk_idx_t obj, const string& key) {
-        if (getPropString(obj, key)) {
-            return safeToString(-1);
-        }
+        if (getPropString(obj, key)) return safeToString(-1);
         throw(InvalidKeyException(this, key, "not found in object"));
     }
     inline string getObjectSafeString(duk_idx_t obj, duk_idx_t index) {
-        if (getPropIndex(obj, index)) {
-            return safeToString(-1);
-        }
+        if (getPropIndex(obj, index)) return safeToString(-1);
         throw(InvalidIndexException(this, index, "not found in object"));
     }
     
     inline void* getObjectHeapPtr(duk_idx_t obj, const string& key) {
-        if (getPropString(obj, key)) {
-            return getHeapPtr(-1);
-        }
+        if (getPropString(obj, key)) return getHeapPtr(-1);
         throw(InvalidKeyException(this, key, "not found in object"));
     }
     inline void* getObjectHeapPtr(duk_idx_t obj, duk_idx_t index) {
-        if (getPropIndex(obj, index)) {
-            return getHeapPtr(-1);
-        }
+        if (getPropIndex(obj, index)) return getHeapPtr(-1);
         throw(InvalidIndexException(this, index, "not found in object"));
     }
     
     inline void* getObjectBuffer(duk_idx_t obj, const string& key, size_t& buf_size) {
-        if (getPropString(obj, key)) {
-            return getBuffer(-1, &buf_size);
-        }
+        if (getPropString(obj, key)) return getBuffer(-1, &buf_size);
         throw(InvalidKeyException(this, key, "not found in object"));
     }
     inline void* getObjectBuffer(duk_idx_t obj, duk_idx_t index, size_t& buf_size) {
-        if (getPropIndex(obj, index)) {
-            return getBuffer(-1, &buf_size);
-        }
+        if (getPropIndex(obj, index)) return getBuffer(-1, &buf_size);
         throw(InvalidIndexException(this, index, "not found in object"));
     }
     
     inline duk_idx_t getObjectObject(duk_idx_t obj, const string& key) {
-        if (getPropString(obj, key)) {
-            return normalizeIndex(-1);
-        }
+        if (getPropString(obj, key)) return normalizeIndex(-1);
         throw(InvalidKeyException(this, key, "not found in object"));
     }
 
-    inline duk_idx_t getObjectObject(duk_idx_t obj, duk_int_t index) {
-        if (getPropIndex(obj, index)) {
-            return normalizeIndex(-1);
-        }
+    inline duk_idx_t getObjectObject(duk_idx_t obj, duk_idx_t index) {
+        if (getPropIndex(obj, index)) return normalizeIndex(-1);
         throw(InvalidIndexException(this, index, "not found in object"));
     }
 
     inline bool isObjectPropUndefined(duk_idx_t obj, const string& key) {
-        if (getPropString(obj, key)) {
-            return isUndefined(-1);
-        }
+        if (getPropString(obj, key)) return isUndefined(-1);
+        throw(InvalidKeyException(this, key, "not found in object"));
+    }
+
+    inline bool isObjectPropUndefined(duk_idx_t obj, duk_idx_t index) {
+        if (getPropIndex(obj, index)) return isUndefined(-1);
+        throw(InvalidIndexException(this, index, "not found in object"));
+    }
+
+    inline bool isObjectPropNull(duk_idx_t obj, const string& key) {
+        if (getPropString(obj, key)) return isNull(-1);
         throw(InvalidKeyException(this, key, "not found in object"));
     }
     
-    inline bool isObjectPropNull(duk_idx_t obj, const string& key) {
-        if (getPropString(obj, key)) {
-            return isNull(-1);
-        }
-        throw(InvalidKeyException(this, key, "not found in object"));
+    inline bool isObjectPropNull(duk_idx_t obj, duk_idx_t index) {
+        if (getPropIndex(obj, index)) return isNull(-1);
+        throw(InvalidIndexException(this, index, "not found in object"));
     }
     
     inline bool isObjectPropArray(duk_idx_t obj, const string& key) {
-        if (getPropString(obj, key)) {
-            return isArray(-1);
-        }
+        if (getPropString(obj, key)) return isArray(-1);
         throw(InvalidKeyException(this, key, "not found in object"));
+    }
+    
+    inline bool isObjectPropArray(duk_idx_t obj, duk_idx_t index) {
+        if (getPropIndex(obj, index)) return isArray(-1);
+        throw(InvalidIndexException(this, index, "not found in object"));
     }
     
     inline bool isObjectPropObject(duk_idx_t obj, const string& key) {
-        if (getPropString(obj, key)) {
-            return isObject(-1);
-        }
+        if (getPropString(obj, key)) return isObject(-1);
         throw(InvalidKeyException(this, key, "not found in object"));
     }
+
+    inline bool isObjectPropObject(duk_idx_t obj, duk_idx_t index) {
+        if (getPropIndex(obj, index)) return isNull(-1);
+        throw(InvalidIndexException(this, index, "not found in object"));
+    }
     
+
     
     inline bool isObjectPropBool(duk_idx_t obj, const string& key) {
-        if (getPropString(obj, key)) {
-            return isBoolean(-1);
-        }
+        if (getPropString(obj, key)) return isBoolean(-1);
         throw(InvalidKeyException(this, key, "not found in object"));
     }
+    inline bool isObjectPropBool(duk_idx_t obj, duk_idx_t index) {
+        if (getPropIndex(obj, index)) return isBoolean(-1);
+        throw(InvalidIndexException(this, index, "not found in object"));
+    }
+    
+
     
     inline bool isObjectPropNumber(duk_idx_t obj, const string& key) {
-        if (getPropString(obj, key)) {
-            return isNumber(-1);
-        }
+        if (getPropString(obj, key)) return isNumber(-1);
         throw(InvalidKeyException(this, key, "not found in object"));
+    }
+    inline bool isObjectPropNumber(duk_idx_t obj, duk_idx_t index) {
+        if (getPropIndex(obj, index)) return isNumber(-1);
+        throw(InvalidIndexException(this, index, "not found in object"));
     }
     
+
+    
     inline bool isObjectPropBuffer(duk_idx_t obj, const string& key) {
-        if (getPropString(obj, key)) {
-            return isBuffer(-1);
-        }
+        if (getPropString(obj, key)) return isBuffer(-1);
         throw(InvalidKeyException(this, key, "not found in object"));
     }
+    inline bool isObjectPropBuffer(duk_idx_t obj, duk_idx_t index) {
+        if (getPropIndex(obj, index)) return isBuffer(-1);
+        throw(InvalidIndexException(this, index, "not found in object"));
+    }
+    
+
     
     
     
