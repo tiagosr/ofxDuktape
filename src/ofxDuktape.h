@@ -228,9 +228,9 @@ public:
     // pushes a number value to the top of the stack
     inline void pushNumber(double n) { duk_push_number(ctx, n); }
     // pushes an integer number value to the top of the stack
-    inline void pushInt(int n) { duk_push_int(ctx, n); }
+    inline void pushInt(duk_int_t n) { duk_push_int(ctx, n); }
     // pushes an unsigned integer number value to the top of the stack
-    inline void pushUint(unsigned int n) { duk_push_uint(ctx, n); }
+    inline void pushUint(duk_uint_t n) { duk_push_uint(ctx, n); }
     // pushes an empty fixed buffer with a given size to the top of the stack
     inline void* pushFixedBuffer(size_t size) {
         return duk_push_buffer(ctx, size, false);
