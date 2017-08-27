@@ -20,30 +20,33 @@ static void ofxDuktapeFree(ofxDuktape* duk, void* ptr) {
 static void ofxDuktapeFatal(duk_context *ctx, duk_errcode_t code, const char* msg) {
     duk_memory_functions mem;
     duk_get_memory_functions(ctx, &mem);
-    
+    ofLogFatalError("ofxDuktape", string("Fatal error in ofxDuktape object ")+ ofToString(mem.udata) + " code " + ofToString(code) + ": " + msg);
 }
 
 void ofxDuktape::threadSetup() {
-    duk_idx_t thread = duk_push_thread(ctx);
-    putObjectHeapPtr(thread, ofxDuktapeProp, (void*)this);
-    setFinalizerFunction(thread, [](ofxDuktape&duk) {
-        ofxDuktape *dduk = static_cast<ofxDuktape*>(duk.getObjectHeapPtr(0, ofxDuktapeProp));
+    pushCurrentThreadStash();
+    putObjectPointer(-1, ofxDuktapeProp, (void*)this);
+    /*
+    setFinalizerFunction(-1, [](ofxDuktape&duk) {
+        duk.pushCurrentThreadStash();
+        ofxDuktape *dduk = static_cast<ofxDuktape*>(duk.getObjectPointer(-1, ofxDuktapeProp));
         if(dduk) delete dduk;
-        duk.putObjectHeapPtr(0, ofxDuktapeProp, 0);
+        duk.putObjectPointer(-1, ofxDuktapeProp, 0);
         return 0;
     });
+    */
     pop();
 }
 
 duk_idx_t ofxDuktape::pushThread() {
     duk_idx_t thread = duk_push_thread(ctx);
     duk_context *octx = duk_get_context(ctx, thread);
-    if(octx) {
-        if(!hasPropString(thread, ofxDuktapeProp)) {
-            ofxDuktape *duk = new ofxDuktape(this, octx);
-            putObjectHeapPtr(thread, ofxDuktapeProp, duk);
-        }
+    pushThreadStash(thread);
+    if(!hasPropString(-1, ofxDuktapeProp)) {
+        ofxDuktape *duk = new ofxDuktape(this, octx);
+        putObjectPointer(-1, ofxDuktapeProp, duk);
     }
+    pop();
     return thread;
 }
 ofxDuktape::ofxDuktape(): ctx(NULL) {
@@ -78,9 +81,9 @@ ofxDuktape::ofxDuktape(ofxDuktape*parent, duk_context *other_ctx) {
 }
 
 ofxDuktape::~ofxDuktape() {
-    duk_idx_t thread = pushThread();
+    pushCurrentThreadStash();
     // clear internal pointer to avoid double-freeing oneself
-    putObjectHeapPtr(thread, ofxDuktapeProp, 0);
+    putObjectHeapPtr(-1, ofxDuktapeProp, 0);
     duk_destroy_heap(ctx);
 }
 
