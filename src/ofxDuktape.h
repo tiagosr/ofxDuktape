@@ -153,11 +153,17 @@ public:
     struct FlushDetachEvent {
         ofxDuktape *duk;
     };
+	struct DebugRequestEvent {
+		ofxDuktape *duk;
+		size_t n_values;
+		size_t ret_n_values;
+	};
     
     ofEvent<ReadEvent> onDebugRead;
     ofEvent<WriteEvent> onDebugWrite;
     ofEvent<PeekEvent> onDebugPeek;
     ofEvent<FlushDetachEvent> onDebugReadFlush, onDebugWriteFlush, onDebugDetach;
+	ofEvent<DebugRequestEvent> onDebugRequest;
     
     // attach the debugger (which will respond through the events in the object)
     void attachDebugger();
@@ -312,8 +318,6 @@ public:
         const char* str = duk_to_lstring(ctx, index, &size);
         return string(str, size);
     }
-    // tries coercing an argument into a default value
-    inline void toDefaultValue(duk_idx_t index, int hint) { duk_to_defaultvalue(ctx, index, hint); }
     // tries coercing an argument into it's primitive type
     inline void toPrimitive(duk_idx_t index, int hint) { duk_to_primitive(ctx, index, hint); }
     
@@ -324,18 +328,27 @@ public:
     inline void requireObjectCoercible(duk_idx_t index) { duk_require_object_coercible(ctx, index); }
     
     inline bool getBool(duk_idx_t index) { return duk_get_boolean(ctx, index); }
+	inline bool getBool(duk_idx_t index, bool _default) { return duk_get_boolean_default(ctx, index, _default); }
     inline bool requireBool(duk_idx_t index) { return duk_require_boolean(ctx, index); }
     inline int  getInt(duk_idx_t index)  { return duk_get_int(ctx, index); }
-    inline int requireInt(duk_idx_t index) { return duk_require_int(ctx, index); }
+	inline int  getInt(duk_idx_t index, int _default)  { return duk_get_int_default(ctx, index, _default); }
+	inline int requireInt(duk_idx_t index) { return duk_require_int(ctx, index); }
     inline unsigned int getUint(duk_idx_t index) { return duk_get_uint(ctx, index); }
-    inline unsigned int requireUint(duk_idx_t index) { return duk_require_uint(ctx, index); }
+	inline unsigned int getUint(duk_idx_t index, unsigned int _default) { return duk_get_uint_default(ctx, index, _default); }
+	inline unsigned int requireUint(duk_idx_t index) { return duk_require_uint(ctx, index); }
     inline double getNumber(duk_idx_t index) { return duk_get_number(ctx, index); }
-    inline double requireNumber(duk_idx_t index) { return duk_require_number(ctx, index); }
+	inline double getNumber(duk_idx_t index, double _default) { return duk_get_number_default(ctx, index, _default); }
+	inline double requireNumber(duk_idx_t index) { return duk_require_number(ctx, index); }
     inline string getString(duk_idx_t index) {
         size_t length;
         const char* str = duk_get_lstring(ctx, index, &length);
         return string(str, length);
     }
+	inline string getString(duk_idx_t index, const string& _default) {
+		size_t length;
+		const char* str = duk_get_lstring_default(ctx, index, &length, _default.c_str(), _default.length());
+		return string(str, length);
+	}
     inline string requireString(duk_idx_t index) {
         size_t length;
         const char* str = duk_require_lstring(ctx, index, &length);
@@ -344,12 +357,28 @@ public:
     inline void* getBuffer(duk_idx_t index, size_t* out_size) {
         return duk_get_buffer(ctx, index, out_size);
     }
+    inline void* getBuffer(duk_idx_t index, size_t* out_size, void* default_buffer, size_t default_buffer_size) {
+        return duk_get_buffer_default(ctx, index, out_size, default_buffer, default_buffer_size);
+    }
     inline void* requireBuffer(duk_idx_t index, size_t* out_size) {
         return duk_require_buffer(ctx, index, out_size);
     }
+
+    inline void* getBufferData(duk_idx_t index, size_t* out_size) {
+        return duk_get_buffer_data(ctx, index, out_size);
+    }
+    inline void* getBufferData(duk_idx_t index, size_t* out_size, void* default_buffer, size_t default_buffer_size) {
+        return duk_get_buffer_data_default(ctx, index, out_size, default_buffer, default_buffer_size);
+    }
+    inline void* requireBufferData(duk_idx_t index, size_t* out_size) {
+        return duk_require_buffer_data(ctx, index, out_size);
+    }
+
     inline void* getHeapPtr(duk_idx_t index) { return duk_get_heapptr(ctx, index); }
+    inline void* getHeapPtr(duk_idx_t index, void* _default) { return duk_get_heapptr_default(ctx, index, _default); }
     inline void* requireHeapPtr(duk_idx_t index) { return duk_require_heapptr(ctx, index); }
     inline void* getPointer(duk_idx_t index) { return duk_get_pointer(ctx, index); }
+    inline void* getPointer(duk_idx_t index, void* _default) { return duk_get_pointer_default(ctx, index, _default); }
     inline void* requirePointer(duk_idx_t index) { return duk_require_pointer(ctx, index); }
     
     inline void* resizeBuffer(duk_idx_t index, size_t new_size) {

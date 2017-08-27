@@ -153,7 +153,7 @@ void ofxDuktape::pushFunction(cpp_function func, int arguments) {
     duk_set_finalizer(ctx, -2);
 }
 
-static duk_ret_t ofxDuktapeSafeCallFunc(duk_context *ctx) {
+static duk_ret_t ofxDuktapeSafeCallFunc(duk_context *ctx, void * udata) {
     if(duk_get_global_string(ctx, ofxDuktapeProp)) {
         ofxDuktape *duk = (ofxDuktape*)duk_get_pointer(ctx, -1);
         ofxDuktapeCPPFunctionWrapper *wrapper = (ofxDuktapeCPPFunctionWrapper *)duk_get_pointer(ctx, -1);
@@ -167,7 +167,7 @@ static duk_ret_t ofxDuktapeSafeCallFunc(duk_context *ctx) {
 duk_ret_t ofxDuktape::safeCall(cpp_function func, int arguments, int rets) {
     shared_ptr<ofxDuktapeCPPFunctionWrapper> wrapper = make_shared<ofxDuktapeCPPFunctionWrapper>(func);
     duk_push_pointer(ctx, wrapper.get());
-    return duk_safe_call(ctx, ofxDuktapeSafeCallFunc, arguments+1, rets);
+    return duk_safe_call(ctx, ofxDuktapeSafeCallFunc, NULL, arguments+1, rets);
 }
 
 static duk_size_t ofxDuktapeDebugReadCB(void* data, char* buffer, duk_size_t length) {
@@ -206,7 +206,17 @@ static void ofxDuktapeDebugWriteFlushCB(void* data) {
     ev.duk = (ofxDuktape *) data;
     ofNotifyEvent(ev.duk->onDebugWriteFlush, ev);
 }
-static void ofxDuktapeDebugDetachCB(void* data) {
+
+static duk_idx_t ofxDuktapeDebugRequestCB(duk_context *duk, void* data, duk_idx_t num_values) {
+    ofxDuktape::DebugRequestEvent ev;
+    ev.duk = (ofxDuktape *) data;
+    ev.n_values = num_values;
+    ev.ret_n_values = 0;
+    ofNotifyEvent(ev.duk->onDebugRequest, ev);
+    return ev.ret_n_values;
+}
+
+static void ofxDuktapeDebugDetachCB(duk_context *duk, void* data) {
     ofxDuktape::FlushDetachEvent ev;
     ev.duk = (ofxDuktape *) data;
     ofNotifyEvent(ev.duk->onDebugDetach, ev);
@@ -221,6 +231,7 @@ void ofxDuktape::attachDebugger() {
                         ofxDuktapeDebugPeekCB,
                         ofxDuktapeDebugReadFlushCB,
                         ofxDuktapeDebugWriteFlushCB,
+                        ofxDuktapeDebugRequestCB,
                         ofxDuktapeDebugDetachCB,
                         this);
 }
