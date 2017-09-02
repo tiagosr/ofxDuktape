@@ -1,0 +1,516 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0E16681A943DAF914FD70069 /* ofxFileDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4679707807EF2CBCAAEF8BF7 /* ofxFileDialog.cpp */; };
+		2F5F8EDE073D13D48B273B89 /* ofxDuktape.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 78B60F834F135B27AA9965A2 /* ofxDuktape.cpp */; };
+		398F4583766AA26A553E36B9 /* ofxEditorFont.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 199D3E543E8D50FFFBB159F9 /* ofxEditorFont.cpp */; };
+		4AFCB170EFD78ADCCFAAF6F2 /* ofxRepl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D82F4F7F1EA4FDA3F6C0104E /* ofxRepl.cpp */; };
+		507CEDC155E968FCBD9FF33C /* ofxGLEditor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 24BC94DC303139BF39B61369 /* ofxGLEditor.cpp */; };
+		689A2E396D4CE7B26BFC500D /* ofxEditorSyntax.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C55A501FE09B6D3545B13FCC /* ofxEditorSyntax.cpp */; };
+		6E519BD2FB1F63665E6903B5 /* Unicode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8C9434C4D1346F228494101F /* Unicode.cpp */; };
+		915EACF7C25CC3F9F3D21990 /* duktape.c in Sources */ = {isa = PBXBuildFile; fileRef = 50F92A9F89FA8C6EA1A50B47 /* duktape.c */; };
+		95CCD8CC3489307961DCA2C2 /* ofxEditorSettings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 99718C66FC5D91F08D6CBA7A /* ofxEditorSettings.cpp */; };
+		E4328149138ABC9F0047C5CB /* openFrameworksDebug.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E4328148138ABC890047C5CB /* openFrameworksDebug.a */; };
+		E4B69E200A3A1BDC003C02F2 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4B69E1D0A3A1BDC003C02F2 /* main.cpp */; };
+		E4B69E210A3A1BDC003C02F2 /* ofApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4B69E1E0A3A1BDC003C02F2 /* ofApp.cpp */; };
+		E874FA147A1642EC2BC94C33 /* ofxEditorColorScheme.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6D4405C4FDE6367F00C5DE69 /* ofxEditorColorScheme.cpp */; };
+		FF393FD80B6AB58FBAA126CC /* ofxEditor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B0B8025979F9C25A030204A6 /* ofxEditor.cpp */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		E4328147138ABC890047C5CB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E4328143138ABC890047C5CB /* openFrameworksLib.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = E4B27C1510CBEB8E00536013;
+			remoteInfo = openFrameworks;
+		};
+		E4EEB9AB138B136A00A80321 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E4328143138ABC890047C5CB /* openFrameworksLib.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = E4B27C1410CBEB8E00536013;
+			remoteInfo = openFrameworks;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		E4C2427710CC5ABF004149E2 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		033E8020DD45D9C3F0DCA564 /* ofxDuktape.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; fileEncoding = 30; name = ofxDuktape.h; path = ../../../addons/ofxDuktape/src/ofxDuktape.h; sourceTree = SOURCE_ROOT; };
+		0D8B03A9FA234D544C88A831 /* duktape.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = duktape.h; path = ../../../addons/ofxDuktape/src/duktape.h; sourceTree = SOURCE_ROOT; };
+		16440F42B6E23F2F6793334F /* ofxGLEditor.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxGLEditor.h; path = ../../../addons/ofxGLEditor/src/ofxGLEditor.h; sourceTree = SOURCE_ROOT; };
+		199D3E543E8D50FFFBB159F9 /* ofxEditorFont.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxEditorFont.cpp; path = ../../../addons/ofxGLEditor/src/ofxEditorFont.cpp; sourceTree = SOURCE_ROOT; };
+		24BC94DC303139BF39B61369 /* ofxGLEditor.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxGLEditor.cpp; path = ../../../addons/ofxGLEditor/src/ofxGLEditor.cpp; sourceTree = SOURCE_ROOT; };
+		4679707807EF2CBCAAEF8BF7 /* ofxFileDialog.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxFileDialog.cpp; path = ../../../addons/ofxGLEditor/src/ofxFileDialog.cpp; sourceTree = SOURCE_ROOT; };
+		50F92A9F89FA8C6EA1A50B47 /* duktape.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 30; name = duktape.c; path = ../../../addons/ofxDuktape/src/duktape.c; sourceTree = SOURCE_ROOT; };
+		6C1C49F3FDEBED75E0E3AC67 /* ofxEditorColorScheme.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxEditorColorScheme.h; path = ../../../addons/ofxGLEditor/src/ofxEditorColorScheme.h; sourceTree = SOURCE_ROOT; };
+		6D4405C4FDE6367F00C5DE69 /* ofxEditorColorScheme.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxEditorColorScheme.cpp; path = ../../../addons/ofxGLEditor/src/ofxEditorColorScheme.cpp; sourceTree = SOURCE_ROOT; };
+		78B60F834F135B27AA9965A2 /* ofxDuktape.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxDuktape.cpp; path = ../../../addons/ofxDuktape/src/ofxDuktape.cpp; sourceTree = SOURCE_ROOT; };
+		831C416334D480A6D123B8F8 /* ofxEditor.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxEditor.h; path = ../../../addons/ofxGLEditor/src/ofxEditor.h; sourceTree = SOURCE_ROOT; };
+		8C9434C4D1346F228494101F /* Unicode.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = Unicode.cpp; path = ../../../addons/ofxGLEditor/src/Unicode.cpp; sourceTree = SOURCE_ROOT; };
+		8D09A60588F1534102401360 /* fontstash.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = fontstash.h; path = ../../../addons/ofxGLEditor/libs/fontstash/include/fontstash.h; sourceTree = SOURCE_ROOT; };
+		8FE15579C1852E388FF0858A /* ofxEditorSyntax.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxEditorSyntax.h; path = ../../../addons/ofxGLEditor/src/ofxEditorSyntax.h; sourceTree = SOURCE_ROOT; };
+		99718C66FC5D91F08D6CBA7A /* ofxEditorSettings.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxEditorSettings.cpp; path = ../../../addons/ofxGLEditor/src/ofxEditorSettings.cpp; sourceTree = SOURCE_ROOT; };
+		9F39A4199E3F955C3C8B434A /* duk_config.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = duk_config.h; path = ../../../addons/ofxDuktape/src/duk_config.h; sourceTree = SOURCE_ROOT; };
+		A3864021DAD568AF1BB6D26D /* Unicode.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = Unicode.h; path = ../../../addons/ofxGLEditor/src/Unicode.h; sourceTree = SOURCE_ROOT; };
+		A3BECC1A840DED0C2712376F /* ofxRepl.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxRepl.h; path = ../../../addons/ofxGLEditor/src/ofxRepl.h; sourceTree = SOURCE_ROOT; };
+		AB61BCCFA598AC3D63F98198 /* ofxFileDialog.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxFileDialog.h; path = ../../../addons/ofxGLEditor/src/ofxFileDialog.h; sourceTree = SOURCE_ROOT; };
+		AB86B0CA1C2DBA53388C022E /* ofxEditorFont.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxEditorFont.h; path = ../../../addons/ofxGLEditor/src/ofxEditorFont.h; sourceTree = SOURCE_ROOT; };
+		B0B8025979F9C25A030204A6 /* ofxEditor.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxEditor.cpp; path = ../../../addons/ofxGLEditor/src/ofxEditor.cpp; sourceTree = SOURCE_ROOT; };
+		C55A501FE09B6D3545B13FCC /* ofxEditorSyntax.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxEditorSyntax.cpp; path = ../../../addons/ofxGLEditor/src/ofxEditorSyntax.cpp; sourceTree = SOURCE_ROOT; };
+		CACA79E26529CC8D840FA05A /* ofxEditorSettings.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxEditorSettings.h; path = ../../../addons/ofxGLEditor/src/ofxEditorSettings.h; sourceTree = SOURCE_ROOT; };
+		CD186F42EA22DF1DCDA1B408 /* stb_truetype.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = stb_truetype.h; path = ../../../addons/ofxGLEditor/libs/fontstash/include/stb_truetype.h; sourceTree = SOURCE_ROOT; };
+		D82F4F7F1EA4FDA3F6C0104E /* ofxRepl.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxRepl.cpp; path = ../../../addons/ofxGLEditor/src/ofxRepl.cpp; sourceTree = SOURCE_ROOT; };
+		E4328143138ABC890047C5CB /* openFrameworksLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = openFrameworksLib.xcodeproj; path = ../../../libs/openFrameworksCompiled/project/osx/openFrameworksLib.xcodeproj; sourceTree = SOURCE_ROOT; };
+		E4B69B5B0A3A1756003C02F2 /* liveCodeExampleDebug.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = liveCodeExampleDebug.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		E4B69E1D0A3A1BDC003C02F2 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = src/main.cpp; sourceTree = SOURCE_ROOT; };
+		E4B69E1E0A3A1BDC003C02F2 /* ofApp.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofApp.cpp; path = src/ofApp.cpp; sourceTree = SOURCE_ROOT; };
+		E4B69E1F0A3A1BDC003C02F2 /* ofApp.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; fileEncoding = 30; name = ofApp.h; path = src/ofApp.h; sourceTree = SOURCE_ROOT; };
+		E4B6FCAD0C3E899E008CF71C /* openFrameworks-Info.plist */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.plist.xml; path = "openFrameworks-Info.plist"; sourceTree = "<group>"; };
+		E4EB691F138AFCF100A09F29 /* CoreOF.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = CoreOF.xcconfig; path = ../../../libs/openFrameworksCompiled/project/osx/CoreOF.xcconfig; sourceTree = SOURCE_ROOT; };
+		E4EB6923138AFD0F00A09F29 /* Project.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = Project.xcconfig; sourceTree = "<group>"; };
+		F926258ADAA6C769F0288FB6 /* glfontstash.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = glfontstash.h; path = ../../../addons/ofxGLEditor/libs/fontstash/include/glfontstash.h; sourceTree = SOURCE_ROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		E4B69B590A3A1756003C02F2 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E4328149138ABC9F0047C5CB /* openFrameworksDebug.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		08C52F241BDDE296997D9343 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				B0B8025979F9C25A030204A6 /* ofxEditor.cpp */,
+				831C416334D480A6D123B8F8 /* ofxEditor.h */,
+				6D4405C4FDE6367F00C5DE69 /* ofxEditorColorScheme.cpp */,
+				6C1C49F3FDEBED75E0E3AC67 /* ofxEditorColorScheme.h */,
+				199D3E543E8D50FFFBB159F9 /* ofxEditorFont.cpp */,
+				AB86B0CA1C2DBA53388C022E /* ofxEditorFont.h */,
+				99718C66FC5D91F08D6CBA7A /* ofxEditorSettings.cpp */,
+				CACA79E26529CC8D840FA05A /* ofxEditorSettings.h */,
+				C55A501FE09B6D3545B13FCC /* ofxEditorSyntax.cpp */,
+				8FE15579C1852E388FF0858A /* ofxEditorSyntax.h */,
+				4679707807EF2CBCAAEF8BF7 /* ofxFileDialog.cpp */,
+				AB61BCCFA598AC3D63F98198 /* ofxFileDialog.h */,
+				24BC94DC303139BF39B61369 /* ofxGLEditor.cpp */,
+				16440F42B6E23F2F6793334F /* ofxGLEditor.h */,
+				D82F4F7F1EA4FDA3F6C0104E /* ofxRepl.cpp */,
+				A3BECC1A840DED0C2712376F /* ofxRepl.h */,
+				8C9434C4D1346F228494101F /* Unicode.cpp */,
+				A3864021DAD568AF1BB6D26D /* Unicode.h */,
+			);
+			name = src;
+			sourceTree = "<group>";
+		};
+		0BD534B87A43F6FA268BE2AF /* src */ = {
+			isa = PBXGroup;
+			children = (
+				9F39A4199E3F955C3C8B434A /* duk_config.h */,
+				50F92A9F89FA8C6EA1A50B47 /* duktape.c */,
+				0D8B03A9FA234D544C88A831 /* duktape.h */,
+				78B60F834F135B27AA9965A2 /* ofxDuktape.cpp */,
+				033E8020DD45D9C3F0DCA564 /* ofxDuktape.h */,
+			);
+			name = src;
+			sourceTree = "<group>";
+		};
+		6948EE371B920CB800B5AC1A /* local_addons */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = local_addons;
+			sourceTree = "<group>";
+		};
+		723BD1CA1DC131339BD857F9 /* include */ = {
+			isa = PBXGroup;
+			children = (
+				8D09A60588F1534102401360 /* fontstash.h */,
+				F926258ADAA6C769F0288FB6 /* glfontstash.h */,
+				CD186F42EA22DF1DCDA1B408 /* stb_truetype.h */,
+			);
+			name = include;
+			sourceTree = "<group>";
+		};
+		7852D0507871C9A7ECBD1819 /* libs */ = {
+			isa = PBXGroup;
+			children = (
+				C15F73B810538290B14A61CB /* fontstash */,
+			);
+			name = libs;
+			sourceTree = "<group>";
+		};
+		855F4AA288F354D6DB691605 /* ofxDuktape */ = {
+			isa = PBXGroup;
+			children = (
+				0BD534B87A43F6FA268BE2AF /* src */,
+			);
+			name = ofxDuktape;
+			sourceTree = "<group>";
+		};
+		9CF97C9C767B62FAD6F26EFC /* ofxGLEditor */ = {
+			isa = PBXGroup;
+			children = (
+				08C52F241BDDE296997D9343 /* src */,
+				7852D0507871C9A7ECBD1819 /* libs */,
+			);
+			name = ofxGLEditor;
+			sourceTree = "<group>";
+		};
+		BB4B014C10F69532006C3DED /* addons */ = {
+			isa = PBXGroup;
+			children = (
+				855F4AA288F354D6DB691605 /* ofxDuktape */,
+				9CF97C9C767B62FAD6F26EFC /* ofxGLEditor */,
+			);
+			name = addons;
+			sourceTree = "<group>";
+		};
+		C15F73B810538290B14A61CB /* fontstash */ = {
+			isa = PBXGroup;
+			children = (
+				723BD1CA1DC131339BD857F9 /* include */,
+			);
+			name = fontstash;
+			sourceTree = "<group>";
+		};
+		E4328144138ABC890047C5CB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				E4328148138ABC890047C5CB /* openFrameworksDebug.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		E4B69B4A0A3A1720003C02F2 = {
+			isa = PBXGroup;
+			children = (
+				E4B6FCAD0C3E899E008CF71C /* openFrameworks-Info.plist */,
+				E4EB6923138AFD0F00A09F29 /* Project.xcconfig */,
+				E4B69E1C0A3A1BDC003C02F2 /* src */,
+				E4EEC9E9138DF44700A80321 /* openFrameworks */,
+				BB4B014C10F69532006C3DED /* addons */,
+				6948EE371B920CB800B5AC1A /* local_addons */,
+				E4B69B5B0A3A1756003C02F2 /* liveCodeExampleDebug.app */,
+			);
+			sourceTree = "<group>";
+		};
+		E4B69E1C0A3A1BDC003C02F2 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				E4B69E1D0A3A1BDC003C02F2 /* main.cpp */,
+				E4B69E1E0A3A1BDC003C02F2 /* ofApp.cpp */,
+				E4B69E1F0A3A1BDC003C02F2 /* ofApp.h */,
+			);
+			path = src;
+			sourceTree = SOURCE_ROOT;
+		};
+		E4EEC9E9138DF44700A80321 /* openFrameworks */ = {
+			isa = PBXGroup;
+			children = (
+				E4EB691F138AFCF100A09F29 /* CoreOF.xcconfig */,
+				E4328143138ABC890047C5CB /* openFrameworksLib.xcodeproj */,
+			);
+			name = openFrameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		E4B69B5A0A3A1756003C02F2 /* liveCodeExample */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E4B69B5F0A3A1757003C02F2 /* Build configuration list for PBXNativeTarget "liveCodeExample" */;
+			buildPhases = (
+				E4B69B580A3A1756003C02F2 /* Sources */,
+				E4B69B590A3A1756003C02F2 /* Frameworks */,
+				E4B6FFFD0C3F9AB9008CF71C /* ShellScript */,
+				E4C2427710CC5ABF004149E2 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				E4EEB9AC138B136A00A80321 /* PBXTargetDependency */,
+			);
+			name = liveCodeExample;
+			productName = myOFApp;
+			productReference = E4B69B5B0A3A1756003C02F2 /* liveCodeExampleDebug.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		E4B69B4C0A3A1720003C02F2 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0600;
+			};
+			buildConfigurationList = E4B69B4D0A3A1720003C02F2 /* Build configuration list for PBXProject "liveCodeExample" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
+			mainGroup = E4B69B4A0A3A1720003C02F2;
+			productRefGroup = E4B69B4A0A3A1720003C02F2;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = E4328144138ABC890047C5CB /* Products */;
+					ProjectRef = E4328143138ABC890047C5CB /* openFrameworksLib.xcodeproj */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				E4B69B5A0A3A1756003C02F2 /* liveCodeExample */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		E4328148138ABC890047C5CB /* openFrameworksDebug.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = openFrameworksDebug.a;
+			remoteRef = E4328147138ABC890047C5CB /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		E4B6FFFD0C3F9AB9008CF71C /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "mkdir -p \"$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/Resources/\"\n# Copy default icon file into App/Resources\nrsync -aved \"$ICON_FILE\" \"$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/Resources/\"\n# Copy libfmod and change install directory for fmod to run\nrsync -aved ../../../libs/fmodex/lib/osx/libfmodex.dylib \"$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/Frameworks/\";\ninstall_name_tool -change @executable_path/libfmodex.dylib @executable_path/../Frameworks/libfmodex.dylib \"$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/MacOS/$PRODUCT_NAME\";\n# Copy GLUT framework (must remove for AppStore submissions)\nrsync -aved ../../../libs/glut/lib/osx/GLUT.framework \"$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/Frameworks/\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		E4B69B580A3A1756003C02F2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E4B69E200A3A1BDC003C02F2 /* main.cpp in Sources */,
+				E4B69E210A3A1BDC003C02F2 /* ofApp.cpp in Sources */,
+				915EACF7C25CC3F9F3D21990 /* duktape.c in Sources */,
+				2F5F8EDE073D13D48B273B89 /* ofxDuktape.cpp in Sources */,
+				FF393FD80B6AB58FBAA126CC /* ofxEditor.cpp in Sources */,
+				E874FA147A1642EC2BC94C33 /* ofxEditorColorScheme.cpp in Sources */,
+				398F4583766AA26A553E36B9 /* ofxEditorFont.cpp in Sources */,
+				95CCD8CC3489307961DCA2C2 /* ofxEditorSettings.cpp in Sources */,
+				689A2E396D4CE7B26BFC500D /* ofxEditorSyntax.cpp in Sources */,
+				0E16681A943DAF914FD70069 /* ofxFileDialog.cpp in Sources */,
+				507CEDC155E968FCBD9FF33C /* ofxGLEditor.cpp in Sources */,
+				4AFCB170EFD78ADCCFAAF6F2 /* ofxRepl.cpp in Sources */,
+				6E519BD2FB1F63665E6903B5 /* Unicode.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		E4EEB9AC138B136A00A80321 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = openFrameworks;
+			targetProxy = E4EEB9AB138B136A00A80321 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		E4B69B4E0A3A1720003C02F2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = E4EB6923138AFD0F00A09F29 /* Project.xcconfig */;
+			buildSettings = {
+				CONFIGURATION_BUILD_DIR = "$(SRCROOT)/bin/";
+				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
+				GCC_AUTO_VECTORIZATION = YES;
+				GCC_ENABLE_SSE3_EXTENSIONS = YES;
+				GCC_ENABLE_SUPPLEMENTAL_SSE3_INSTRUCTIONS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = YES;
+				GCC_WARN_ABOUT_INVALID_OFFSETOF_MACRO = NO;
+				GCC_WARN_ALLOW_INCOMPLETE_PROTOCOL = NO;
+				GCC_WARN_UNINITIALIZED_AUTOS = NO;
+				GCC_WARN_UNUSED_VALUE = NO;
+				GCC_WARN_UNUSED_VARIABLE = NO;
+				HEADER_SEARCH_PATHS = (
+					"$(OF_CORE_HEADERS)",
+					../../../addons/ofxDuktape/src,
+					../../../addons/ofxGLEditor/libs,
+					../../../addons/ofxGLEditor/libs/fontstash,
+					../../../addons/ofxGLEditor/libs/fontstash/include,
+					../../../addons/ofxGLEditor/src,
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_CPLUSPLUSFLAGS = (
+					"-D__MACOSX_CORE__",
+					"-mtune=native",
+				);
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		E4B69B4F0A3A1720003C02F2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = E4EB6923138AFD0F00A09F29 /* Project.xcconfig */;
+			buildSettings = {
+				CONFIGURATION_BUILD_DIR = "$(SRCROOT)/bin/";
+				COPY_PHASE_STRIP = YES;
+				DEAD_CODE_STRIPPING = YES;
+				GCC_AUTO_VECTORIZATION = YES;
+				GCC_ENABLE_SSE3_EXTENSIONS = YES;
+				GCC_ENABLE_SUPPLEMENTAL_SSE3_INSTRUCTIONS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 3;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_UNROLL_LOOPS = YES;
+				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = YES;
+				GCC_WARN_ABOUT_INVALID_OFFSETOF_MACRO = NO;
+				GCC_WARN_ALLOW_INCOMPLETE_PROTOCOL = NO;
+				GCC_WARN_UNINITIALIZED_AUTOS = NO;
+				GCC_WARN_UNUSED_VALUE = NO;
+				GCC_WARN_UNUSED_VARIABLE = NO;
+				HEADER_SEARCH_PATHS = (
+					"$(OF_CORE_HEADERS)",
+					../../../addons/ofxDuktape/src,
+					../../../addons/ofxGLEditor/libs,
+					../../../addons/ofxGLEditor/libs/fontstash,
+					../../../addons/ofxGLEditor/libs/fontstash/include,
+					../../../addons/ofxGLEditor/src,
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				OTHER_CPLUSPLUSFLAGS = (
+					"-D__MACOSX_CORE__",
+					"-mtune=native",
+				);
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		E4B69B600A3A1757003C02F2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = E4EB6923138AFD0F00A09F29 /* Project.xcconfig */;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				COPY_PHASE_STRIP = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+				);
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../libs/glut/lib/osx\"";
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_MODEL_TUNING = NONE;
+				HEADER_SEARCH_PATHS = (
+					"$(OF_CORE_HEADERS)",
+					../../../addons/ofxDuktape/src,
+					../../../addons/ofxGLEditor/libs,
+					../../../addons/ofxGLEditor/libs/fontstash,
+					../../../addons/ofxGLEditor/libs/fontstash/include,
+					../../../addons/ofxGLEditor/src,
+				);
+				ICON = "$(ICON_NAME_DEBUG)";
+				ICON_FILE = "$(ICON_FILE_PATH)$(ICON)";
+				INFOPLIST_FILE = "openFrameworks-Info.plist";
+				INSTALL_PATH = /Applications;
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				PRODUCT_NAME = "$(TARGET_NAME)Debug";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		E4B69B610A3A1757003C02F2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = E4EB6923138AFD0F00A09F29 /* Project.xcconfig */;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				COPY_PHASE_STRIP = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+				);
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../libs/glut/lib/osx\"";
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_MODEL_TUNING = NONE;
+				HEADER_SEARCH_PATHS = (
+					"$(OF_CORE_HEADERS)",
+					../../../addons/ofxDuktape/src,
+					../../../addons/ofxGLEditor/libs,
+					../../../addons/ofxGLEditor/libs/fontstash,
+					../../../addons/ofxGLEditor/libs/fontstash/include,
+					../../../addons/ofxGLEditor/src,
+				);
+				ICON = "$(ICON_NAME_RELEASE)";
+				ICON_FILE = "$(ICON_FILE_PATH)$(ICON)";
+				INFOPLIST_FILE = "openFrameworks-Info.plist";
+				INSTALL_PATH = /Applications;
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+				baseConfigurationReference = E4EB6923138AFD0F00A09F29;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		E4B69B4D0A3A1720003C02F2 /* Build configuration list for PBXProject "liveCodeExample" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E4B69B4E0A3A1720003C02F2 /* Debug */,
+				E4B69B4F0A3A1720003C02F2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E4B69B5F0A3A1757003C02F2 /* Build configuration list for PBXNativeTarget "liveCodeExample" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E4B69B600A3A1757003C02F2 /* Debug */,
+				E4B69B610A3A1757003C02F2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = E4B69B4C0A3A1720003C02F2 /* Project object */;
+}

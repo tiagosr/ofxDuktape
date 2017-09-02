@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "CD8D2AEB92A9CE1AB37B8BCABA69CFCA3706415F",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "CD8D2AEB92A9CE1AB37B8BCABA69CFCA3706415F" : 9223372036854775807,
+    "DA298CE2AB975BA2CF43E11863DF98F71A466522" : 9223372036854775807
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "961767A4-B999-4E8D-9E76-41CE21D768F2",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "CD8D2AEB92A9CE1AB37B8BCABA69CFCA3706415F" : "ofxDuktape\/",
+    "DA298CE2AB975BA2CF43E11863DF98F71A466522" : "ofxGLEditor\/"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "liveCodeExample",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "liveCodeExample\/liveCodeExample.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:tiagosr\/ofxDuktape.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "CD8D2AEB92A9CE1AB37B8BCABA69CFCA3706415F"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:tiagosr\/ofxGLEditor.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "DA298CE2AB975BA2CF43E11863DF98F71A466522"
+    }
+  ]
+}
