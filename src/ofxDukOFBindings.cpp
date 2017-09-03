@@ -95,9 +95,203 @@ static ofVec3f ofVec3fFromObject(ofxDuktape& duk, duk_idx_t i) {
     return ofVec3f(duk.getObjectNumber(i, "x"), duk.getObjectNumber(i, "y"), duk.getObjectNumber(i, "z"));
 }
 
+ofxDukBindings::ofxDukBindings(ofxDuktape& duk): duk(duk) {
+    ofAddListener(ofEvents().update, this, &ofxDukBindings::onUpdate);
+    ofAddListener(ofEvents().draw, this, &ofxDukBindings::onDraw);
+    
+    ofAddListener(ofEvents().mouseMoved, this, &ofxDukBindings::onMouseEvent);
+    ofAddListener(ofEvents().mousePressed, this, &ofxDukBindings::onMouseEvent);
+    ofAddListener(ofEvents().mouseReleased, this, &ofxDukBindings::onMouseEvent);
+    ofAddListener(ofEvents().mouseEntered, this, &ofxDukBindings::onMouseEvent);
+    ofAddListener(ofEvents().mouseExited, this, &ofxDukBindings::onMouseEvent);
+    ofAddListener(ofEvents().mouseDragged, this, &ofxDukBindings::onMouseEvent);
+    ofAddListener(ofEvents().mouseScrolled, this, &ofxDukBindings::onMouseEvent);
+    
+    ofAddListener(ofEvents().keyPressed, this, &ofxDukBindings::onKeyEvent);
+    ofAddListener(ofEvents().keyReleased, this, &ofxDukBindings::onKeyEvent);
 
-void ofxDukBindings::setup(ofxDuktape& duk) {
+    ofAddListener(ofEvents().fileDragEvent, this, &ofxDukBindings::onDragEvent);
+    ofAddListener(ofEvents().messageEvent, this, &ofxDukBindings::onMessageEvent);
+}
+
+ofxDukBindings::~ofxDukBindings() {
+    ofRemoveListener(ofEvents().update, this, &ofxDukBindings::onUpdate);
+    ofRemoveListener(ofEvents().draw, this, &ofxDukBindings::onDraw);
+    
+    ofRemoveListener(ofEvents().mouseMoved, this, &ofxDukBindings::onMouseEvent);
+    ofRemoveListener(ofEvents().mousePressed, this, &ofxDukBindings::onMouseEvent);
+    ofRemoveListener(ofEvents().mouseReleased, this, &ofxDukBindings::onMouseEvent);
+    ofRemoveListener(ofEvents().mouseEntered, this, &ofxDukBindings::onMouseEvent);
+    ofRemoveListener(ofEvents().mouseExited, this, &ofxDukBindings::onMouseEvent);
+    ofRemoveListener(ofEvents().mouseDragged, this, &ofxDukBindings::onMouseEvent);
+    ofRemoveListener(ofEvents().mouseScrolled, this, &ofxDukBindings::onMouseEvent);
+    
+    ofRemoveListener(ofEvents().keyPressed, this, &ofxDukBindings::onKeyEvent);
+    ofRemoveListener(ofEvents().keyReleased, this, &ofxDukBindings::onKeyEvent);
+    
+    ofRemoveListener(ofEvents().fileDragEvent, this, &ofxDukBindings::onDragEvent);
+    ofRemoveListener(ofEvents().messageEvent, this, &ofxDukBindings::onMessageEvent);
+}
+
+void ofxDukBindings::onDraw(ofEventArgs &ev) {
+    auto top = duk.getTop();
+    duk.getGlobalString("of");
+    auto of_events = duk.getObjectObject(-1, "events");
+    if (duk.getPropString(of_events, "draw")) {
+        if (duk.isCallable(-1)) {
+            duk.call(-1);
+        }
+    }
+    duk.setTop(top);
+}
+
+void ofxDukBindings::onUpdate(ofEventArgs &ev) {
+    auto top = duk.getTop();
+    duk.getGlobalString("of");
+    auto of_events = duk.getObjectObject(-1, "events");
+    if (duk.getPropString(of_events, "update")) {
+        if (duk.isCallable(-1)) {
+            duk.call(0);
+        }
+    }
+    duk.setTop(top);
+}
+
+void ofxDukBindings::onKeyEvent(ofKeyEventArgs &ev) {
+    auto top = duk.getTop();
+    duk.getGlobalString("of");
+    auto of_events = duk.getObjectObject(-1, "events");
+    string type = "keyPressed";
+    switch(ev.type) {
+        case ofKeyEventArgs::Pressed:
+            type = "keyPressed";
+            break;
+        case ofKeyEventArgs::Released:
+            type = "keyReleased";
+            break;
+    }
+    if (duk.getPropString(-1, type)) {
+        if (duk.isCallable(-1)) {
+            auto ev_args = duk.pushObject();
+            duk.putObjectInt(ev_args, "key", ev.key);
+            duk.putObjectInt(ev_args, "keycode", ev.keycode);
+            duk.putObjectInt(ev_args, "scancode", ev.scancode);
+            duk.putObjectUint(ev_args, "codepoint", ev.codepoint);
+            duk.putObjectString(ev_args, "type", type);
+            duk.call(1);
+        }
+    }
+    duk.setTop(top);
+}
+
+void ofxDukBindings::onMouseEvent(ofMouseEventArgs &ev) {
+    auto top = duk.getTop();
+    duk.getGlobalString("of");
+    auto of_events = duk.getObjectObject(-1, "events");
+    string type = "mouseMoved";
+    switch(ev.type) {
+        case ofMouseEventArgs::Moved:
+            type = "mouseMoved";
+            break;
+        case ofMouseEventArgs::Pressed:
+            type = "mousePressed";
+            break;
+        case ofMouseEventArgs::Released:
+            type = "mouseReleased";
+            break;
+        case ofMouseEventArgs::Entered:
+            type = "mouseEntered";
+            break;
+        case ofMouseEventArgs::Exited:
+            type = "mouseExited";
+            break;
+        case ofMouseEventArgs::Dragged:
+            type = "mouseDragged";
+            break;
+        case ofMouseEventArgs::Scrolled:
+            type = "mouseScrolled";
+            break;
+    }
+    if (duk.getPropString(-1, type)) {
+        if (duk.isCallable(-1)) {
+            auto ev_args = duk.pushObject();
+            duk.putObjectInt(ev_args, "button", ev.button);
+            duk.putObjectNumber(ev_args, "scrollX", ev.scrollX);
+            duk.putObjectNumber(ev_args, "scrollY", ev.scrollY);
+            duk.putObjectNumber(ev_args, "x", ev.x);
+            duk.putObjectNumber(ev_args, "y", ev.y);
+            duk.putObjectString(ev_args, "type", type);
+            duk.call(1);
+        }
+    }
+    duk.setTop(top);
+}
+
+void ofxDukBindings::onWindowResizeEvent(ofResizeEventArgs& ev) {
+    auto top = duk.getTop();
+    duk.getGlobalString("of");
+    auto of_events = duk.getObjectObject(-1, "events");
+    if (duk.getPropString(of_events, "windowResized")) {
+        if (duk.isCallable(-1)) {
+            duk.pushInt(ev.width);
+            duk.pushInt(ev.height);
+            duk.call(2);
+        }
+    }
+    duk.setTop(top);
+}
+
+void ofxDukBindings::onDragEvent(ofDragInfo& dragInfo) {
+    auto top = duk.getTop();
+    duk.getGlobalString("of");
+    auto of_events = duk.getObjectObject(-1, "events");
+    if (duk.getPropString(of_events, "dragEvent")) {
+        if (duk.isCallable(-1)) {
+            auto ev_args = duk.pushObject();
+            auto files_arr = duk.pushArray();
+            int counter = 0;
+            for (auto file: dragInfo.files) {
+                duk.putObjectString(files_arr, counter, file);
+                counter++;
+            }
+            duk.putPropString(ev_args, "files");
+            auto position = duk.pushObject();
+            duk.putObjectInt(position, "x", dragInfo.position.x);
+            duk.putObjectInt(position, "y", dragInfo.position.y);
+            duk.putPropString(ev_args, "position");
+            duk.call(1);
+        }
+    }
+    duk.setTop(top);
+}
+
+void ofxDukBindings::onMessageEvent(ofMessage &message) {
+    auto top = duk.getTop();
+    duk.getGlobalString("of");
+    auto of_events = duk.getObjectObject(-1, "events");
+    if (duk.getPropString(of_events, "gotMessage")) {
+        if (duk.isCallable(-1)) {
+            duk.pushString(message.message);
+            duk.call(1);
+        }
+    }
+    duk.setTop(top);
+}
+
+ofxDukBindings& ofxDukBindings::setup(ofxDuktape& duk) {
     auto of = duk.pushObject();
+    
+    void* bindings_store = duk.pushFixedBuffer(sizeof(ofxDukBindings));
+    
+    ofxDukBindings* bindings = new (bindings_store) ofxDukBindings(duk);
+    
+    /*
+    duk.setFinalizerFunction(-1, [bindings](ofxDuktape& duk) {
+        bindings->~ofxDukBindings();
+        return 0;
+    });
+     */
+    duk.putPropString(of, "\xff""bindings");
     
     auto of_events = duk.pushObject();
     // fill event slots with null
@@ -109,12 +303,13 @@ void ofxDukBindings::setup(ofxDuktape& duk) {
     duk.putObjectNull(of_events, "mouseDragged");
     duk.putObjectNull(of_events, "mouseEntered");
     duk.putObjectNull(of_events, "mouseExited");
+    duk.putObjectNull(of_events, "mouseScrolled");
     duk.putObjectNull(of_events, "keyPressed");
     duk.putObjectNull(of_events, "keyReleased");
     duk.putObjectNull(of_events, "windowResized");
     duk.putObjectNull(of_events, "dragEvent");
     duk.putObjectNull(of_events, "gotMessage");
-
+    
     duk.putPropString(of, "events");
     
     duk.putObjectConstInts(of,{
@@ -663,5 +858,5 @@ void ofxDukBindings::setup(ofxDuktape& duk) {
         ofLogNotice() << duk.safeToString(0); return 0;
     }, 1);
     
-    
+    return *bindings;
 }

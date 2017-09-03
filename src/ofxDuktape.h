@@ -883,7 +883,7 @@ public:
         if (getPropIndex(obj, index)) return normalizeIndex(-1);
         throw(InvalidIndexException(this, index, "not found in object"));
     }
-
+    
     inline bool isObjectPropUndefined(duk_idx_t obj, const string& key) {
         if (getPropString(obj, key)) return isUndefined(-1);
         throw(InvalidKeyException(this, key, "not found in object"));
@@ -924,6 +924,15 @@ public:
         throw(InvalidIndexException(this, index, "not found in object"));
     }
     
+    inline bool isObjectPropCallable(duk_idx_t obj, const string& key) {
+        if (getPropString(obj, key)) return isCallable(-1);
+        throw(InvalidKeyException(this, key, "not found in object"));
+    }
+    
+    inline bool isObjectPropCallable(duk_idx_t obj, duk_idx_t index) {
+        if (getPropIndex(obj, index)) return isCallable(-1);
+        throw(InvalidIndexException(this, index, "not found in object"));
+    }
 
     
     inline bool isObjectPropBool(duk_idx_t obj, const string& key) {
@@ -1106,6 +1115,19 @@ public:
     
     inline void putObjectInt(duk_idx_t obj, duk_idx_t i, int n) {
         pushInt(n);
+        if (!putPropIndex(obj > 0?obj:obj - 1, i)) {
+            throw(InvalidObjectException(this, obj, "invalid object"));
+        }
+    }
+    inline void putObjectUint(duk_idx_t obj, const string&key, unsigned int i) {
+        pushUint(i);
+        if (!putPropString(obj > 0?obj:obj - 1, key)) {
+            throw(InvalidObjectException(this, obj, "invalid object"));
+        }
+    }
+    
+    inline void putObjectUint(duk_idx_t obj, duk_idx_t i, unsigned int n) {
+        pushUint(n);
         if (!putPropIndex(obj > 0?obj:obj - 1, i)) {
             throw(InvalidObjectException(this, obj, "invalid object"));
         }

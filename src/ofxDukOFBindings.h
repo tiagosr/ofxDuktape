@@ -14,16 +14,17 @@
 class ofxDukBindings {
     
     ofxDuktape& duk;
-    ofxDukBindings(ofxDuktape& duk): duk(duk) {
-        
-    }
-    virtual ~ofxDukBindings() {}
+    ofxDukBindings(ofxDuktape& duk);
+    virtual ~ofxDukBindings();
     
     void onUpdate(ofEventArgs& ev);
     void onDraw(ofEventArgs& ev);
     void onKeyEvent(ofKeyEventArgs& ev);
     void onMouseEvent(ofMouseEventArgs& ev);
+    void onDragEvent(ofDragInfo& dragInfo);
+    void onWindowResizeEvent(ofResizeEventArgs& ev);
+    void onMessageEvent(ofMessage& message);
     
 public:
-    static void setup(ofxDuktape& duk);
+    static ofxDukBindings& setup(ofxDuktape& duk);
 };
