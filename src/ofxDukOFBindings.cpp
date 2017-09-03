@@ -99,6 +99,24 @@ static ofVec3f ofVec3fFromObject(ofxDuktape& duk, duk_idx_t i) {
 void ofxDukBindings::setup(ofxDuktape& duk) {
     auto of = duk.pushObject();
     
+    auto of_events = duk.pushObject();
+    // fill event slots with null
+    duk.putObjectNull(of_events, "update");
+    duk.putObjectNull(of_events, "draw");
+    duk.putObjectNull(of_events, "mouseMoved");
+    duk.putObjectNull(of_events, "mousePressed");
+    duk.putObjectNull(of_events, "mouseReleased");
+    duk.putObjectNull(of_events, "mouseDragged");
+    duk.putObjectNull(of_events, "mouseEntered");
+    duk.putObjectNull(of_events, "mouseExited");
+    duk.putObjectNull(of_events, "keyPressed");
+    duk.putObjectNull(of_events, "keyReleased");
+    duk.putObjectNull(of_events, "windowResized");
+    duk.putObjectNull(of_events, "dragEvent");
+    duk.putObjectNull(of_events, "gotMessage");
+
+    duk.putPropString(of, "events");
+    
     duk.putObjectConstInts(of,{
         {"LOOP_NONE", OF_LOOP_NONE},
         {"LOOP_PALINDROME", OF_LOOP_PALINDROME},

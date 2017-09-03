@@ -256,6 +256,11 @@ public:
         duk_push_external_buffer(ctx);
         duk_config_buffer(ctx, -1, ptr, len);
     }
+    // steals a buffer from the stack, allowing the application
+    // to manage that chunk of memory
+    inline void* stealBuffer(duk_idx_t index, size_t& out_size) {
+        return duk_steal_buffer(ctx, index, &out_size);
+    }
     // pushes a buffer object or a buffer view object, with data from the buffer object
     inline void pushBufferObject(duk_idx_t buf, duk_size_t offset, duk_size_t byte_length, duk_uint_t flags) {
         duk_push_buffer_object(ctx, buf, offset, byte_length, flags);
@@ -409,7 +414,7 @@ public:
     inline void* optionalBuffer(duk_idx_t index, size_t& out_size, void* default_buffer, size_t default_buffer_size) {
         return duk_opt_buffer(ctx, index, &out_size, default_buffer, default_buffer_size);
     }
-
+    
     inline void* getBufferData(duk_idx_t index, size_t& out_size) {
         return duk_get_buffer_data(ctx, index, &out_size);
     }
