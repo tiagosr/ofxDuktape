@@ -1,9 +1,11 @@
 #include "ofApp.h"
+#include "ofxDukOFBindings.h"
 
 //--------------------------------------------------------------
 void ofApp::setup(){
     ofBackground(0);
     ofSetLogLevel("ofxDuktapeLiveEditor", OF_LOG_VERBOSE);
+    ofxDukBindings::setup(duk);
     string meta = ofxEditor::getSuperAsModifier() ? "Cmd" : "Ctrl";
     ofSetWindowTitle(string("ofxDuktape live editor: ")+meta+"+[0-9]: editors, "+meta+"+R: REPL, "+meta+"+F: toggle fullscreen");
     ofxEditor::loadFont("fonts/PrintChar21.ttf", 21);

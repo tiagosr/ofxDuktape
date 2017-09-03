@@ -204,6 +204,10 @@ public:
     
     inline bool isRangeError(duk_idx_t index) { return duk_is_range_error(ctx, index); }
     inline bool isReferenceError(duk_idx_t index) { return duk_is_reference_error(ctx, index); }
+    inline bool isSyntaxError(duk_idx_t index) { return duk_is_syntax_error(ctx, index); }
+    inline bool isEvalError(duk_idx_t index) { return duk_is_eval_error(ctx, index); }
+    inline bool isTypeError(duk_idx_t index) { return duk_is_type_error(ctx, index); }
+    inline bool isURIError(duk_idx_t index) { return duk_is_uri_error(ctx, index); }
     
     // pushed 'undefined' to the top of the stack
     inline void pushUndefined() { duk_push_undefined(ctx); }
@@ -213,6 +217,8 @@ public:
     inline void pushNaN() { duk_push_nan(ctx); }
     // pushes the "this" object
     inline void pushThis() { duk_push_this(ctx); }
+    // pushes a bare object (with null prototype)
+    inline duk_idx_t pushBareObject() { return duk_push_bare_object(ctx); }
     // pushes an empty object to the top of the stack
     inline duk_idx_t pushObject() { return duk_push_object(ctx); }
     // pushes an empty array to the top of the stack
@@ -345,6 +351,10 @@ public:
     // requires the presence of a value that can be converted into an object
     // in the given argument (throws an error otherwise)
     inline void requireObjectCoercible(duk_idx_t index) { duk_require_object_coercible(ctx, index); }
+    // requires the presence of a function (not only a callable object)
+    inline void requireFunction(duk_idx_t index) { duk_require_function(ctx, index); }
+    // requires the presence of a context/thread
+    inline void requireContext(duk_idx_t index) { duk_require_context(ctx, index); }
     
     inline bool getBool(duk_idx_t index) { return duk_get_boolean(ctx, index); }
 	inline bool getBool(duk_idx_t index, bool _default) { return duk_get_boolean_default(ctx, index, _default); }
@@ -484,6 +494,10 @@ public:
         obj_index = normalizeIndex(obj_index);
         pushFunction(func, 1);
         setFinalizer(obj_index);
+    }
+    
+    inline void setLength(duk_idx_t index, size_t new_length) {
+        duk_set_length(ctx, index, new_length);
     }
     
     inline void putObjectGetterSetter(duk_idx_t obj, const string& key,

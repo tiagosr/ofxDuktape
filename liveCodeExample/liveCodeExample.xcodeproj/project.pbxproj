@@ -16,6 +16,7 @@
 		6E519BD2FB1F63665E6903B5 /* Unicode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8C9434C4D1346F228494101F /* Unicode.cpp */; };
 		915EACF7C25CC3F9F3D21990 /* duktape.c in Sources */ = {isa = PBXBuildFile; fileRef = 50F92A9F89FA8C6EA1A50B47 /* duktape.c */; };
 		95CCD8CC3489307961DCA2C2 /* ofxEditorSettings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 99718C66FC5D91F08D6CBA7A /* ofxEditorSettings.cpp */; };
+		B14CFF531F5AEABD003FC16E /* ofxDukOFBindings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B14CFF521F5AEABD003FC16E /* ofxDukOFBindings.cpp */; };
 		E4328149138ABC9F0047C5CB /* openFrameworksDebug.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E4328148138ABC890047C5CB /* openFrameworksDebug.a */; };
 		E4B69E200A3A1BDC003C02F2 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4B69E1D0A3A1BDC003C02F2 /* main.cpp */; };
 		E4B69E210A3A1BDC003C02F2 /* ofApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4B69E1E0A3A1BDC003C02F2 /* ofApp.cpp */; };
@@ -74,6 +75,8 @@
 		AB61BCCFA598AC3D63F98198 /* ofxFileDialog.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxFileDialog.h; path = ../../../addons/ofxGLEditor/src/ofxFileDialog.h; sourceTree = SOURCE_ROOT; };
 		AB86B0CA1C2DBA53388C022E /* ofxEditorFont.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxEditorFont.h; path = ../../../addons/ofxGLEditor/src/ofxEditorFont.h; sourceTree = SOURCE_ROOT; };
 		B0B8025979F9C25A030204A6 /* ofxEditor.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxEditor.cpp; path = ../../../addons/ofxGLEditor/src/ofxEditor.cpp; sourceTree = SOURCE_ROOT; };
+		B14CFF511F5AE60A003FC16E /* ofxDukOFBindings.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; name = ofxDukOFBindings.h; path = ../src/ofxDukOFBindings.h; sourceTree = "<group>"; };
+		B14CFF521F5AEABD003FC16E /* ofxDukOFBindings.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ofxDukOFBindings.cpp; path = ../src/ofxDukOFBindings.cpp; sourceTree = "<group>"; };
 		C55A501FE09B6D3545B13FCC /* ofxEditorSyntax.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxEditorSyntax.cpp; path = ../../../addons/ofxGLEditor/src/ofxEditorSyntax.cpp; sourceTree = SOURCE_ROOT; };
 		CACA79E26529CC8D840FA05A /* ofxEditorSettings.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxEditorSettings.h; path = ../../../addons/ofxGLEditor/src/ofxEditorSettings.h; sourceTree = SOURCE_ROOT; };
 		CD186F42EA22DF1DCDA1B408 /* stb_truetype.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = stb_truetype.h; path = ../../../addons/ofxGLEditor/libs/fontstash/include/stb_truetype.h; sourceTree = SOURCE_ROOT; };
@@ -134,6 +137,8 @@
 				0D8B03A9FA234D544C88A831 /* duktape.h */,
 				78B60F834F135B27AA9965A2 /* ofxDuktape.cpp */,
 				033E8020DD45D9C3F0DCA564 /* ofxDuktape.h */,
+				B14CFF511F5AE60A003FC16E /* ofxDukOFBindings.h */,
+				B14CFF521F5AEABD003FC16E /* ofxDukOFBindings.cpp */,
 			);
 			name = src;
 			sourceTree = "<group>";
@@ -327,6 +332,7 @@
 				E4B69E200A3A1BDC003C02F2 /* main.cpp in Sources */,
 				E4B69E210A3A1BDC003C02F2 /* ofApp.cpp in Sources */,
 				915EACF7C25CC3F9F3D21990 /* duktape.c in Sources */,
+				B14CFF531F5AEABD003FC16E /* ofxDukOFBindings.cpp in Sources */,
 				2F5F8EDE073D13D48B273B89 /* ofxDuktape.cpp in Sources */,
 				FF393FD80B6AB58FBAA126CC /* ofxEditor.cpp in Sources */,
 				E874FA147A1642EC2BC94C33 /* ofxEditorColorScheme.cpp in Sources */,
