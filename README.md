@@ -1,6 +1,7 @@
 # ofxDuktape
 
 openFrameworks addon with bindings to the [Duktape](http://www.duktape.org) Javascript interpreter
+
 This addon is distributed under the terms of the MIT License.
 
 ## Usage
