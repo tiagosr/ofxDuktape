@@ -30,11 +30,9 @@ static ofColor ofColorFromObject(ofxDuktape& duk, duk_idx_t index) {
             return ofColor(duk.getObjectNumber(index, 0));
         }
     }
-    if (duk.hasPropString(index, "r") &&
-        duk.hasPropString(index, "g") &&
-        duk.hasPropString(index, "b"))
+    if (duk.hasProperties(index, {"r", "g", "b"}))
     {
-        if (duk.hasPropString(index, "a")) {
+        if (duk.hasProperty(index, "a")) {
             return ofColor(duk.getObjectNumber(index, "r"),
                            duk.getObjectNumber(index, "g"),
                            duk.getObjectNumber(index, "b"),
@@ -389,7 +387,6 @@ ofxDukBindings& ofxDukBindings::setup(ofxDuktape& duk) {
         {"MATRIX_PROJECTION", OF_MATRIX_PROJECTION},
         {"MATRIX_TEXTURE", OF_MATRIX_TEXTURE},
         
-        {"KEY_MODIFIER",  OF_KEY_MODIFIER},
         {"KEY_RETURN",    OF_KEY_RETURN},
         {"KEY_ESC",       OF_KEY_ESC},
         {"KEY_TAB",       OF_KEY_TAB},
@@ -495,8 +492,8 @@ ofxDukBindings& ofxDukBindings::setup(ofxDuktape& duk) {
         {"LOG_ERROR",   OF_LOG_ERROR},
         {"LOG_FATAL_ERROR", OF_LOG_FATAL_ERROR},
         
-        {"ENCODING_UTF8",        OF_ENCODING_UTF8},
-        {"ENCODING_ISO_8859_15", OF_ENCODING_ISO_8859_15},
+        //{"ENCODING_UTF8",        OF_ENCODING_UTF8},
+        //{"ENCODING_ISO_8859_15", OF_ENCODING_ISO_8859_15},
         
     });
     
@@ -576,7 +573,7 @@ ofxDukBindings& ofxDukBindings::setup(ofxDuktape& duk) {
         {"elapsedTimeMillis", [](ofxDuktape& duk){ duk.pushUint(ofGetElapsedTimeMillis()); return 1; }},
         {"elapsedTimeMicros", [](ofxDuktape& duk){ duk.pushUint(ofGetElapsedTimeMicros()); return 1; }},
         {"unixTime", [](ofxDuktape& duk){ duk.pushUint(ofGetUnixTime()); return 1; }},
-        {"systemTime", [](ofxDuktape& duk){ duk.pushUint(ofGetSystemTime()); return 1; }},
+        {"systemTimeMillis", [](ofxDuktape& duk){ duk.pushUint(ofGetSystemTimeMillis()); return 1; }},
         {"systemTimeMicros", [](ofxDuktape& duk){ duk.pushUint(ofGetSystemTimeMicros()); return 1; }},
         {"versionMajor", [](ofxDuktape& duk){ duk.pushUint(ofGetVersionMajor()); return 1; }},
         {"versionMinor", [](ofxDuktape& duk){ duk.pushUint(ofGetVersionMinor()); return 1; }},

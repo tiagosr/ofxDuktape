@@ -236,6 +236,7 @@ public:
     // pushes the 'false' value to the top of the stack
     inline void pushFalse() { duk_push_false(ctx); }
     // pushes a string value to the top of the stack
+    inline void pushString(const char* s) { duk_push_string(ctx, s); }
     inline void pushString(const string& s) { duk_push_lstring(ctx, s.c_str(), s.length()); }
     // pushes a number value to the top of the stack
     inline void pushNumber(double n) { duk_push_number(ctx, n); }
@@ -313,6 +314,7 @@ public:
     
     // gets an argument and casts to string
     inline string safeToString(duk_idx_t index) { return duk_safe_to_string(ctx, index); }
+    inline const char* safeToCString(duk_idx_t index) { return duk_safe_to_string(ctx, index); }
     
     inline duk_ret_t safeCall(cpp_function func, int arguments, int rets);
     
@@ -374,7 +376,7 @@ public:
     inline unsigned int getUint(duk_idx_t index) { return duk_get_uint(ctx, index); }
 	inline unsigned int getUint(duk_idx_t index, unsigned int _default) { return duk_get_uint_default(ctx, index, _default); }
 	inline unsigned int requireUint(duk_idx_t index) { return duk_require_uint(ctx, index); }
-    inline unsigned int optionalUInt(duk_int_t index, unsigned int _default) { return duk_opt_uint(ctx, index, _default); }
+    inline unsigned int optionalUint(duk_int_t index, unsigned int _default) { return duk_opt_uint(ctx, index, _default); }
     
     inline double getNumber(duk_idx_t index) { return duk_get_number(ctx, index); }
 	inline double getNumber(duk_idx_t index, double _default) { return duk_get_number_default(ctx, index, _default); }
@@ -401,6 +403,12 @@ public:
         const char* str = duk_opt_lstring(ctx, index, &length, _default.c_str(), _default.length());
         return string(str, length);
     }
+    
+    inline const char* getCString(duk_idx_t index) { return duk_get_string(ctx, index); }
+    inline const char* getCStringDefault(duk_idx_t index, const char* _default) { return duk_get_string_default(ctx, index, _default); }
+    inline const char* requireCString(duk_idx_t index) { return duk_require_string(ctx, index); }
+    inline const char* optionalCString(duk_idx_t index, const char* _default) { return duk_opt_string(ctx, index, _default); }
+
     
     inline void* getBuffer(duk_idx_t index, size_t& out_size) {
         return duk_get_buffer(ctx, index, &out_size);
@@ -452,11 +460,31 @@ public:
     inline bool hasProp(duk_idx_t obj_index) {
         return duk_has_prop(ctx, obj_index);
     }
+    
+    inline bool hasProperty(duk_idx_t obj_index, int prop_index) {
+        return duk_has_prop_index(ctx, obj_index, prop_index);
+    }
+    inline bool hasProperty(duk_idx_t obj_index, const char* key) {
+        return duk_has_prop_string(ctx, obj_index, key);
+    }
+    inline bool hasProperty(duk_idx_t obj_index, const string& key) {
+        return duk_has_prop_string(ctx, obj_index, key.c_str());
+    }
     inline bool hasPropIndex(duk_idx_t obj_index, int prop_index) {
         return duk_has_prop_index(ctx, obj_index, prop_index);
     }
+    inline bool hasPropString(duk_idx_t obj_index, const char* key) {
+        return duk_has_prop_string(ctx, obj_index, key);
+    }
     inline bool hasPropString(duk_idx_t obj_index, const string& key) {
         return duk_has_prop_string(ctx, obj_index, key.c_str());
+    }
+    
+    inline bool hasProperties(duk_idx_t obj_index, std::initializer_list<const char*> keys) {
+        for (const char* key: keys) {
+            if (!hasProperty(obj_index, key)) return false;
+        }
+        return true;
     }
     
     
@@ -464,7 +492,20 @@ public:
     inline bool putPropIndex(duk_idx_t obj_index, int arr_index) {
         return duk_put_prop_index(ctx, obj_index, arr_index);
     }
+    inline bool putPropString(duk_idx_t obj_index, const char* key) {
+        return duk_put_prop_string(ctx, obj_index, key);
+    }
     inline bool putPropString(duk_idx_t obj_index, const string& key) {
+        return duk_put_prop_string(ctx, obj_index, key.c_str());
+    }
+    
+    inline bool putProperty(duk_idx_t obj_index, int arr_index) {
+        return duk_put_prop_index(ctx, obj_index, arr_index);
+    }
+    inline bool putProperty(duk_idx_t obj_index, const char* key) {
+        return duk_put_prop_string(ctx, obj_index, key);
+    }
+    inline bool putProperty(duk_idx_t obj_index, const string& key) {
         return duk_put_prop_string(ctx, obj_index, key.c_str());
     }
     
@@ -476,6 +517,14 @@ public:
     inline void setGlobalObject() { duk_set_global_object(ctx); }
     inline void setMagic(duk_idx_t index, int magic) { duk_set_magic(ctx, index, magic); }
     inline void setPrototype(duk_idx_t index) { duk_set_prototype(ctx, index); }
+    inline void setPrototypeGlobalString(duk_idx_t index, const string& key) {
+        duk_get_global_string(ctx, key.c_str());
+        duk_set_prototype(ctx, index);
+    }
+    inline void setPrototypeGlobalString(duk_idx_t index, const char* key) {
+        duk_get_global_string(ctx, key);
+        duk_set_prototype(ctx, index);
+    }
     inline void setTop(duk_idx_t index) { duk_set_top(ctx, index); }
     
     inline void defineProperty(duk_idx_t obj_index, unsigned int flags) {
@@ -490,7 +539,20 @@ public:
         pushString(key);
         return deleteProperty(obj_index);
     }
-    
+    inline bool deleteProperty(duk_idx_t obj_index, unsigned int array_index) {
+        return duk_del_prop_index(ctx, obj_index, array_index);
+    }
+    inline bool deleteProperty(duk_idx_t obj_index, const string& key) {
+        obj_index = normalizeIndex(obj_index);
+        pushString(key);
+        return deleteProperty(obj_index);
+    }
+    inline bool deleteProperty(duk_idx_t obj_index, const char* key) {
+        obj_index = normalizeIndex(obj_index);
+        pushString(key);
+        return deleteProperty(obj_index);
+    }
+
     inline void setFinalizer(duk_idx_t obj_index) {
         duk_set_finalizer(ctx, obj_index);
     }
