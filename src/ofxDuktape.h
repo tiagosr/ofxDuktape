@@ -456,6 +456,16 @@ public:
     inline bool getPropString(duk_idx_t obj_index, const string& key) {
         return duk_get_prop_string(ctx, obj_index, key.c_str());
     }
+    inline bool getProperty(duk_idx_t obj_index, int arr_index) {
+        return duk_get_prop_index(ctx, obj_index, arr_index);
+    }
+    inline bool getProperty(duk_idx_t obj_index, const char* key) {
+        return duk_get_prop_string(ctx, obj_index, key);
+    }
+    inline bool getProperty(duk_idx_t obj_index, const string& key) {
+        return duk_get_prop_string(ctx, obj_index, key.c_str());
+    }
+
     inline void getPrototype(duk_idx_t obj_index) { duk_get_prototype(ctx, obj_index); }
     inline bool hasProp(duk_idx_t obj_index) {
         return duk_has_prop(ctx, obj_index);
@@ -1333,6 +1343,14 @@ public:
             throw(InvalidObjectException(this, obj, "invalid object"));
         }
     }
+
+    inline void seal(duk_idx_t obj) {
+        duk_seal(ctx, obj);
+    }
+
+    inline void freeze(duk_idx_t obj) {
+        duk_freeze(ctx, obj);
+    }
     
     inline void base64Decode(duk_idx_t obj) {
         duk_base64_decode(ctx, obj);
@@ -1354,6 +1372,19 @@ public:
     inline void jsonDecode(const string& str) {
         pushString(str);
         jsonDecode(-1);
+    }
+
+    inline void cborDecode(duk_idx_t obj) {
+        duk_cbor_decode(ctx, obj, 0);
+    }
+
+    inline string cborEncode(duk_idx_t obj) {
+        duk_cbor_encode(ctx, obj, 0);
+        duk_size_t len = 0;
+        char* buf = (char*)duk_require_buffer_data(ctx, -1, &len);
+        string ret(buf, len);
+        duk_pop(ctx);
+        return ret;
     }
     
 };

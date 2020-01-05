@@ -135,7 +135,7 @@ void ofxDukBindings::onDraw(ofEventArgs &ev) {
     auto top = duk.getTop();
     duk.getGlobalString("of");
     auto of_events = duk.getObjectObject(-1, "events");
-    if (duk.getPropString(of_events, "draw")) {
+    if (duk.getProperty(of_events, "draw")) {
         if (duk.isCallable(-1)) {
             duk.call(-1);
         }
@@ -147,7 +147,7 @@ void ofxDukBindings::onUpdate(ofEventArgs &ev) {
     auto top = duk.getTop();
     duk.getGlobalString("of");
     auto of_events = duk.getObjectObject(-1, "events");
-    if (duk.getPropString(of_events, "update")) {
+    if (duk.getProperty(of_events, "update")) {
         if (duk.isCallable(-1)) {
             duk.call(0);
         }
@@ -159,7 +159,7 @@ void ofxDukBindings::onKeyEvent(ofKeyEventArgs &ev) {
     auto top = duk.getTop();
     duk.getGlobalString("of");
     auto of_events = duk.getObjectObject(-1, "events");
-    string type = "keyPressed";
+    const char* type = "keyPressed";
     switch(ev.type) {
         case ofKeyEventArgs::Pressed:
             type = "keyPressed";
@@ -168,7 +168,7 @@ void ofxDukBindings::onKeyEvent(ofKeyEventArgs &ev) {
             type = "keyReleased";
             break;
     }
-    if (duk.getPropString(-1, type)) {
+    if (duk.getProperty(-1, type)) {
         if (duk.isCallable(-1)) {
             auto ev_args = duk.pushObject();
             duk.putObjectInt(ev_args, "key", ev.key);
@@ -186,7 +186,7 @@ void ofxDukBindings::onMouseEvent(ofMouseEventArgs &ev) {
     auto top = duk.getTop();
     duk.getGlobalString("of");
     auto of_events = duk.getObjectObject(-1, "events");
-    string type = "mouseMoved";
+    const char* type = "mouseMoved";
     switch(ev.type) {
         case ofMouseEventArgs::Moved:
             type = "mouseMoved";
@@ -210,7 +210,7 @@ void ofxDukBindings::onMouseEvent(ofMouseEventArgs &ev) {
             type = "mouseScrolled";
             break;
     }
-    if (duk.getPropString(-1, type)) {
+    if (duk.getProperty(-1, type)) {
         if (duk.isCallable(-1)) {
             auto ev_args = duk.pushObject();
             duk.putObjectInt(ev_args, "button", ev.button);
@@ -229,7 +229,7 @@ void ofxDukBindings::onWindowResizeEvent(ofResizeEventArgs& ev) {
     auto top = duk.getTop();
     duk.getGlobalString("of");
     auto of_events = duk.getObjectObject(-1, "events");
-    if (duk.getPropString(of_events, "windowResized")) {
+    if (duk.getProperty(of_events, "windowResized")) {
         if (duk.isCallable(-1)) {
             duk.pushInt(ev.width);
             duk.pushInt(ev.height);
@@ -243,7 +243,7 @@ void ofxDukBindings::onDragEvent(ofDragInfo& dragInfo) {
     auto top = duk.getTop();
     duk.getGlobalString("of");
     auto of_events = duk.getObjectObject(-1, "events");
-    if (duk.getPropString(of_events, "dragEvent")) {
+    if (duk.getProperty(of_events, "dragEvent")) {
         if (duk.isCallable(-1)) {
             auto ev_args = duk.pushObject();
             auto files_arr = duk.pushArray();
@@ -267,7 +267,7 @@ void ofxDukBindings::onMessageEvent(ofMessage &message) {
     auto top = duk.getTop();
     duk.getGlobalString("of");
     auto of_events = duk.getObjectObject(-1, "events");
-    if (duk.getPropString(of_events, "gotMessage")) {
+    if (duk.getProperty(of_events, "gotMessage")) {
         if (duk.isCallable(-1)) {
             duk.pushString(message.message);
             duk.call(1);
