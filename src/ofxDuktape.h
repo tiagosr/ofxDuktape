@@ -1099,14 +1099,14 @@ public:
     
     inline void putObjectNull(duk_idx_t obj, const string& key) {
         pushNull();
-        if (!putPropString(obj > 0?obj:obj - 1, key)) {
+        if (!putProperty(obj > 0?obj:obj - 1, key)) {
             throw(InvalidObjectException(this, obj, "invalid object"));
         }
     }
     
     inline void putObjectNull(duk_idx_t obj, duk_idx_t i) {
         pushNull();
-        if (!putPropIndex(obj > 0?obj:obj - 1, i)) {
+        if (!putProperty(obj > 0?obj:obj - 1, i)) {
             throw(InvalidObjectException(this, obj, "invalid object"));
         }
     }
@@ -1114,216 +1114,222 @@ public:
     
     inline void putObjectUndefined(duk_idx_t obj, const string& key) {
         pushUndefined();
-        if (!putPropString(obj > 0?obj:obj - 1, key)) {
+        if (!putProperty(obj > 0?obj:obj - 1, key)) {
             throw(InvalidObjectException(this, obj, "invalid object"));
         }
     }
     
     inline void putObjectUndefined(duk_idx_t obj, duk_idx_t i) {
         pushUndefined();
-        if (!putPropIndex(obj > 0?obj:obj - 1, i)) {
+        if (!putProperty(obj > 0?obj:obj - 1, i)) {
             throw(InvalidObjectException(this, obj, "invalid object"));
         }
     }
     
     inline void putObjectTrue(duk_idx_t obj, const string& key) {
         pushTrue();
-        if (!putPropString(obj >0?obj:obj - 1, key)) {
+        if (!putProperty(obj >0?obj:obj - 1, key)) {
             throw(InvalidObjectException(this, obj, "invalid object"));
         }
     }
     
     inline void putObjectTrue(duk_idx_t obj, duk_idx_t i) {
         pushTrue();
-        if (!putPropIndex(obj > 0?obj:obj - 1, i)) {
+        if (!putProperty(obj > 0?obj:obj - 1, i)) {
             throw(InvalidObjectException(this, obj, "invalid object"));
         }
     }
     
     inline void putObjectFalse(duk_idx_t obj, const string& key) {
         pushFalse();
-        if (!putPropString(obj > 0?obj:obj - 1, key)) {
+        if (!putProperty(obj > 0?obj:obj - 1, key)) {
             throw(InvalidObjectException(this, obj, "invalid object"));
         }
     }
     
     inline void putObjectFalse(duk_idx_t obj, duk_idx_t i) {
         pushFalse();
-        if (!putPropIndex(obj > 0?obj:obj - 1, i)) {
+        if (!putProperty(obj > 0?obj:obj - 1, i)) {
             throw(InvalidObjectException(this, obj, "invalid object"));
         }
     }
     
     inline void putObjectBool(duk_idx_t obj, const string&key, bool b) {
         pushBool(b);
-        if (!putPropString(obj > 0?obj:obj - 1, key)) {
+        if (!putProperty(obj > 0?obj:obj - 1, key)) {
             throw(InvalidObjectException(this, obj, "invalid object"));
         }
     }
     
     inline void putObjectBool(duk_idx_t obj, duk_idx_t i, bool b) {
         pushBool(b);
-        if (!putPropIndex(obj > 0?obj:obj - 1, i)) {
+        if (!putProperty(obj > 0?obj:obj - 1, i)) {
             throw(InvalidObjectException(this, obj, "invalid object"));
         }
     }
     
     inline void putObjectInt(duk_idx_t obj, const string&key, int i) {
         pushInt(i);
-        if (!putPropString(obj > 0?obj:obj - 1, key)) {
+        if (!putProperty(obj > 0?obj:obj - 1, key)) {
             throw(InvalidObjectException(this, obj, "invalid object"));
         }
     }
     
     inline void putObjectInt(duk_idx_t obj, duk_idx_t i, int n) {
         pushInt(n);
-        if (!putPropIndex(obj > 0?obj:obj - 1, i)) {
+        if (!putProperty(obj > 0?obj:obj - 1, i)) {
             throw(InvalidObjectException(this, obj, "invalid object"));
         }
     }
     inline void putObjectUint(duk_idx_t obj, const string&key, unsigned int i) {
         pushUint(i);
-        if (!putPropString(obj > 0?obj:obj - 1, key)) {
+        if (!putProperty(obj > 0?obj:obj - 1, key)) {
             throw(InvalidObjectException(this, obj, "invalid object"));
         }
     }
     
     inline void putObjectUint(duk_idx_t obj, duk_idx_t i, unsigned int n) {
         pushUint(n);
-        if (!putPropIndex(obj > 0?obj:obj - 1, i)) {
+        if (!putProperty(obj > 0?obj:obj - 1, i)) {
             throw(InvalidObjectException(this, obj, "invalid object"));
         }
     }
     
     inline void putObjectNumber(duk_idx_t obj, const string&key, double d) {
         pushNumber(d);
-        if (!putPropString(obj > 0?obj:obj - 1, key)) {
+        if (!putProperty(obj > 0?obj:obj - 1, key)) {
             throw(InvalidObjectException(this, obj, "invalid object"));
         }
     }
     
     inline void putObjectNumber(duk_idx_t obj, duk_idx_t i, double d) {
         pushNumber(d);
-        if (!putPropIndex(obj > 0?obj:obj - 1, i)) {
+        if (!putProperty(obj > 0?obj:obj - 1, i)) {
             throw(InvalidObjectException(this, obj, "invalid object"));
         }
     }
     
     inline void putObjectString(duk_idx_t obj, const string&key, const string& value) {
         pushString(value);
-        if (!putPropString(obj > 0?obj:obj - 1, key)) {
+        if (!putProperty(obj > 0?obj:obj - 1, key)) {
             throw(InvalidObjectException(this, obj, "invalid object"));
         }
     }
     
     inline void putObjectString(duk_idx_t obj, duk_idx_t i, const string& value) {
         pushString(value);
-        if (!putPropIndex(obj > 0?obj:obj - 1, i)) {
+        if (!putProperty(obj > 0?obj:obj - 1, i)) {
             throw(InvalidObjectException(this, obj, "invalid object"));
         }
     }
     
     inline void putObjectPointer(duk_idx_t obj, const string&key, void* ptr) {
         pushPointer(ptr);
-        if (!putPropString(obj > 0?obj:obj - 1, key)) {
+        if (!putProperty(obj > 0?obj:obj - 1, key)) {
             throw(InvalidObjectException(this, obj, "invalid object"));
         }
     }
 
     inline void putObjectHeapPtr(duk_idx_t obj, const string& key, void* ptr) {
         pushHeapPtr(ptr);
-        if (!putPropString(obj>0?obj:obj - 1, key)) {
+        if (!putProperty(obj>0?obj:obj - 1, key)) {
             throw(InvalidObjectException(this, obj, "invalid object"));
         }
     }
     
     inline void putObjectHeapPtr(duk_idx_t obj, duk_idx_t i, void* ptr) {
         pushHeapPtr(ptr);
-        if (!putPropIndex(obj>0?obj:obj - 1, i)) {
+        if (!putProperty(obj>0?obj:obj - 1, i)) {
             throw(InvalidObjectException(this, obj, "invalid object"));
         }
     }
     
     inline void putObjectFunction(duk_idx_t obj, const string& key, cpp_function func, int args) {
         pushFunction(func, args);
-        if (!putPropString(obj>0?obj:obj - 1, key)) {
+        if (!putProperty(obj>0?obj:obj - 1, key)) {
+            throw(InvalidObjectException(this, obj, "invalid object"));
+        }
+    }
+    inline void putObjectFunction(duk_idx_t obj, const char* key, cpp_function func, int args) {
+        pushFunction(func, args);
+        if (!putProperty(obj>0?obj:obj - 1, key)) {
             throw(InvalidObjectException(this, obj, "invalid object"));
         }
     }
     
     inline void putObjectFunction(duk_idx_t obj, duk_idx_t key, cpp_function func, int args) {
         pushFunction(func, args);
-        if (!putPropIndex(obj>0?obj:obj - 1, key)) {
+        if (!putProperty(obj>0?obj:obj - 1, key)) {
             throw(InvalidObjectException(this, obj, "invalid object"));
         }
     }
     
     inline void putObjectDynamicBuffer(duk_idx_t obj, const string& key, int initial_size, void** bufptr) {
         *bufptr = pushDynamicBuffer(initial_size);
-        if (!putPropString(obj>0?obj:obj - 1, key)) {
+        if (!putProperty(obj>0?obj:obj - 1, key)) {
             throw(InvalidObjectException(this, obj, "invalid object"));
         }
     }
     
     inline void putObjectDynamicBuffer(duk_idx_t obj, duk_idx_t key, int initial_size, void** bufptr) {
         *bufptr = pushDynamicBuffer(initial_size);
-        if (!putPropIndex(obj>0?obj:obj - 1, key)) {
+        if (!putProperty(obj>0?obj:obj - 1, key)) {
             throw(InvalidObjectException(this, obj, "invalid object"));
         }
     }
     
     inline void putObjectFixedBuffer(duk_idx_t obj, const string& key, int size, void** bufptr) {
         *bufptr = pushFixedBuffer(size);
-        if (!putPropString(obj>0?obj:obj - 1, key)) {
+        if (!putProperty(obj>0?obj:obj - 1, key)) {
             throw(InvalidObjectException(this, obj, "invalid object"));
         }
     }
     
     inline void putObjectFixedBuffer(duk_idx_t obj, duk_idx_t key, int size, void** bufptr) {
         *bufptr = pushFixedBuffer(size);
-        if (!putPropIndex(obj>0?obj:obj - 1, key)) {
+        if (!putProperty(obj>0?obj:obj - 1, key)) {
             throw(InvalidObjectException(this, obj, "invalid object"));
         }
     }
     
     inline void putObjectExternalBuffer(duk_idx_t obj, const string& key, void* ptr, size_t len) {
         pushExternalBuffer(ptr, len);
-        if (!putPropString(obj>0?obj:obj - 1, key)) {
+        if (!putProperty(obj>0?obj:obj - 1, key)) {
             throw(InvalidObjectException(this, obj, "invalid object"));
         }
     }
     
     inline void putObjectExternalBuffer(duk_idx_t obj, duk_idx_t key, void* ptr, size_t len) {
         pushExternalBuffer(ptr, len);
-        if (!putPropIndex(obj>0?obj:obj - 1, key)) {
+        if (!putProperty(obj>0?obj:obj - 1, key)) {
             throw(InvalidObjectException(this, obj, "invalid object"));
         }
     }
     
     inline void putObjectGlobalStash(duk_idx_t obj, const string& key) {
         pushGlobalStash();
-        if (!putPropString(obj > 0 ? obj : obj - 1, key)) {
+        if (!putProperty(obj > 0 ? obj : obj - 1, key)) {
             throw(InvalidObjectException(this, obj, "invalid object"));
         }
     }
     
     inline void putObjectGlobalStash(duk_idx_t obj, duk_idx_t key) {
         pushGlobalStash();
-        if (!putPropIndex(obj > 0 ? obj : obj - 1, key)) {
+        if (!putProperty(obj > 0 ? obj : obj - 1, key)) {
             throw(InvalidObjectException(this, obj, "invalid object"));
         }
     }
     
     inline void putObjectHeapStash(duk_idx_t obj, const string& key) {
         pushHeapStash();
-        if (!putPropString(obj > 0 ? obj : obj - 1, key)) {
+        if (!putProperty(obj > 0 ? obj : obj - 1, key)) {
             throw(InvalidObjectException(this, obj, "invalid object"));
         }
     }
     
     inline void putObjectHeapStash(duk_idx_t obj, duk_idx_t key) {
         pushHeapStash();
-        if (!putPropIndex(obj > 0 ? obj : obj - 1, key)) {
+        if (!putProperty(obj > 0 ? obj : obj - 1, key)) {
             throw(InvalidObjectException(this, obj, "invalid object"));
         }
     }
