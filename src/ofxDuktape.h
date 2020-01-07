@@ -41,15 +41,17 @@ public:
     // pops a given argument in the stack
     inline void pop(int count) { duk_pop_n(ctx, count); }
     // duplicates a given argument onto the topmost element at the stack
-    inline void dup(int index) { duk_dup(ctx, index); }
+    inline void dup(duk_idx_t index) { duk_dup(ctx, index); }
     // duplicates the topmost argument in the stack
     inline void dupTop() { duk_dup_top(ctx); }
     // swaps arguments between two positions
-    inline void swap(int a, int b) { duk_swap(ctx, a, b); }
+    inline void swap(duk_idx_t a, duk_idx_t b) { duk_swap(ctx, a, b); }
     // swaps arguments between a given position and the top of the stack
-    inline void swapTop(int other) { duk_swap_top(ctx, other); }
+    inline void swapTop(duk_idx_t other) { duk_swap_top(ctx, other); }
     // copies an argument to another, overwriting the second one
-    inline void copy(int from, int to) { duk_copy(ctx, from, to); }
+    inline void copy(duk_idx_t from, duk_idx_t to) { duk_copy(ctx, from, to); }
+    // removes an argument from a specific position in the stack to put it back at the top
+    inline void pull(duk_idx_t from) { duk_pull(ctx, from); }
     
     // normalizes index relative to the bottom of the current frame
     inline duk_idx_t normalizeIndex(duk_idx_t index) { return duk_normalize_index(ctx, index); }
@@ -182,6 +184,7 @@ public:
     inline bool isBuffer(duk_idx_t index) { return duk_is_buffer(ctx, index); }
     inline bool isCFunction(duk_idx_t index) { return duk_is_c_function(ctx, index); }
     inline bool isCallable(duk_idx_t index) { return duk_is_callable(ctx, index); }
+    inline bool isConstructable(duk_idx_t index) { return duk_is_constructable(ctx, index); }
     inline bool isConstructorCall() { return duk_is_constructor_call(ctx); }
     inline bool isDynamicBuffer(duk_idx_t index) { return duk_is_dynamic_buffer(ctx, index); }
     inline bool isEcmascriptFunction(duk_idx_t index) { return duk_is_ecmascript_function(ctx, index); }
@@ -223,6 +226,8 @@ public:
     inline duk_idx_t pushObject() { return duk_push_object(ctx); }
     // pushes an empty array to the top of the stack
     inline duk_idx_t pushArray() { return duk_push_array(ctx); }
+    // pushes an empty bare array (with null prototype) to the top of the stack
+    inline duk_idx_t pushBareArray() { return duk_push_bare_array(ctx); }
     // pushes the global object to the top of the stack
     inline void pushGlobalObject() { duk_push_global_object(ctx); }
     // pushes the global stash to the top of the stack
@@ -257,6 +262,9 @@ public:
         duk_push_external_buffer(ctx);
         duk_config_buffer(ctx, -1, ptr, len);
     }
+    // pushes a new target (if within a constructor call - else pushes undefined)
+    inline void pushNewTarget() { duk_push_new_target(ctx); }
+
     // steals a buffer from the stack, allowing the application
     // to manage that chunk of memory
     inline void* stealBuffer(duk_idx_t index, size_t& out_size) {
@@ -279,6 +287,9 @@ public:
 
     // pushes a pointer to an outside object into the top of the stack
     inline void pushPointer(void* ptr) { duk_push_pointer(ctx, ptr); }
+
+    // pushes a proxy object
+    inline duk_idx_t pushProxy(duk_uint_t proxyFlags) { return duk_push_proxy(ctx, proxyFlags); }
 
     // pushes current function object into the top of the stack
     inline void pushCurrentFunction() { duk_push_current_function(ctx); }
@@ -315,6 +326,10 @@ public:
     // gets an argument and casts to string
     inline string safeToString(duk_idx_t index) { return duk_safe_to_string(ctx, index); }
     inline const char* safeToCString(duk_idx_t index) { return duk_safe_to_string(ctx, index); }
+
+    // gets an argument and tries coercing into a stack trace
+    inline string safeToStacktrace(duk_idx_t index) { return duk_safe_to_stacktrace(ctx, index); }
+    inline const char* safeToStacktraceC(duk_idx_t index) { return duk_safe_to_stacktrace(ctx, index); }
     
     inline duk_ret_t safeCall(cpp_function func, int arguments, int rets);
     
@@ -352,9 +367,14 @@ public:
     }
     // tries coercing an argument into it's primitive type
     inline void toPrimitive(duk_idx_t index, int hint) { duk_to_primitive(ctx, index, hint); }
+
+    // tries coercing an argument into a stack trace (along with a stack trace string
+    inline string toStackTrace(duk_idx_t index) { return duk_to_stacktrace(ctx, index); }
     
     // requires the presence of null in the given argument (throws an error otherwise)
     inline void requireNull(duk_idx_t index) { duk_require_null(ctx, index); }
+    // requires the presence of an object
+    inline void requireObject(duk_idx_t index) { duk_require_object(ctx, index); }
     // requires the presence of a value that can be converted into an object
     // in the given argument (throws an error otherwise)
     inline void requireObjectCoercible(duk_idx_t index) { duk_require_object_coercible(ctx, index); }
@@ -453,8 +473,14 @@ public:
     inline bool getPropIndex(duk_idx_t obj_index, int arr_index) {
         return duk_get_prop_index(ctx, obj_index, arr_index);
     }
+    inline bool getPropString(duk_idx_t obj_index, const char* key) {
+        return duk_get_prop_string(ctx, obj_index, key);
+    }
     inline bool getPropString(duk_idx_t obj_index, const string& key) {
         return duk_get_prop_string(ctx, obj_index, key.c_str());
+    }
+    inline bool getPropHeapptr(duk_idx_t obj_index, void* key) {
+        return duk_get_prop_heapptr(ctx, obj_index, key);
     }
     inline bool getProperty(duk_idx_t obj_index, int arr_index) {
         return duk_get_prop_index(ctx, obj_index, arr_index);
@@ -507,6 +533,9 @@ public:
     }
     inline bool putPropString(duk_idx_t obj_index, const string& key) {
         return duk_put_prop_string(ctx, obj_index, key.c_str());
+    }
+    inline bool putPropHeapPtr(duk_idx_t obj_index, void * key) {
+        return duk_put_prop_heapptr(ctx, obj_index, key);
     }
     
     inline bool putProperty(duk_idx_t obj_index, int arr_index) {
@@ -718,6 +747,18 @@ public:
             putObjectInt(obj, get<0>(i), get<1>(i));
         }
     }
+    inline void putObjectInts(duk_idx_t obj, size_t idx_start, initializer_list<int> init) {
+        size_t idx = idx_start;
+        for (auto& i : init) {
+            putObjectInt(obj, idx++, i);
+        }
+    }
+    inline void putObjectInts(duk_idx_t obj, initializer_list<int> init) {
+        size_t idx = 0;
+        for (auto& i : init) {
+            putObjectInt(obj, idx++, i);
+        }
+    }
     inline void putObjectConstInts(duk_idx_t obj, initializer_list<object_int_value> init) {
         for(auto& i: init) {
             putObjectConstInt(obj, get<0>(i), get<1>(i));
@@ -726,6 +767,18 @@ public:
     inline void putObjectNumbers(duk_idx_t obj, initializer_list<object_number_value> init) {
         for(auto& i: init) {
             putObjectNumber(obj, get<0>(i), get<1>(i));
+        }
+    }
+    inline void putObjectNumbers(duk_idx_t obj, size_t idx_start, initializer_list<double> init) {
+        size_t idx = idx_start;
+        for (auto& d : init) {
+            putObjectNumber(obj, idx++, d);
+        }
+    }
+    inline void putObjectNumbers(duk_idx_t obj, initializer_list<double> init) {
+        size_t idx = 0;
+        for (auto& d : init) {
+            putObjectNumber(obj, idx++, d);
         }
     }
     inline void putObjectConstNumbers(duk_idx_t obj, initializer_list<object_number_value> init) {
@@ -738,6 +791,18 @@ public:
             putObjectBool(obj, get<0>(i), get<1>(i));
         }
     }
+    inline void putObjectBools(duk_idx_t obj, size_t idx_start, initializer_list<bool> init) {
+        size_t idx = idx_start;
+        for (auto& b : init) {
+            putObjectBool(obj, idx++, b);
+        }
+    }
+    inline void putObjectBools(duk_idx_t obj, initializer_list<bool> init) {
+        size_t idx = 0;
+        for (auto& b : init) {
+            putObjectBool(obj, idx++, b);
+        }
+    }
     inline void putObjectConstBools(duk_idx_t obj, initializer_list<object_bool_value> init) {
         for(auto& i: init) {
             putObjectConstBool(obj, get<0>(i), get<1>(i));
@@ -746,6 +811,30 @@ public:
     inline void putObjectStrings(duk_idx_t obj, initializer_list<object_string_value> init) {
         for(auto& i: init) {
             putObjectString(obj, get<0>(i), get<1>(i));
+        }
+    }
+    inline void putObjectStrings(duk_idx_t obj, size_t idx_start, initializer_list<string> init) {
+        size_t idx = idx_start;
+        for (auto& str : init) {
+            putObjectString(obj, idx++, str);
+        }
+    }
+    inline void putObjectStrings(duk_idx_t obj, size_t idx_start, initializer_list<const char*> init) {
+        size_t idx = idx_start;
+        for (auto& str : init) {
+            putObjectString(obj, idx++, str);
+        }
+    }
+    inline void putObjectStrings(duk_idx_t obj, initializer_list<string> init) {
+        size_t idx = 0;
+        for (auto& str : init) {
+            putObjectString(obj, idx++, str);
+        }
+    }
+    inline void putObjectStrings(duk_idx_t obj, initializer_list<const char*> init) {
+        size_t idx = 0;
+        for (auto& str : init) {
+            putObjectString(obj, idx++, str);
         }
     }
     inline void putObjectConstStrings(duk_idx_t obj, initializer_list<object_string_value> init) {
@@ -1344,13 +1433,10 @@ public:
         }
     }
 
-    inline void seal(duk_idx_t obj) {
-        duk_seal(ctx, obj);
-    }
+    inline void seal(duk_idx_t obj) { duk_seal(ctx, obj); }
+    inline void freeze(duk_idx_t obj) { duk_freeze(ctx, obj); }
 
-    inline void freeze(duk_idx_t obj) {
-        duk_freeze(ctx, obj);
-    }
+    inline double random() { return duk_random(ctx); }
     
     inline void base64Decode(duk_idx_t obj) {
         duk_base64_decode(ctx, obj);

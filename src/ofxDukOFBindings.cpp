@@ -289,7 +289,7 @@ ofxDukBindings& ofxDukBindings::setup(ofxDuktape& duk) {
         return 0;
     });
      */
-    duk.putPropString(of, "\xff""bindings");
+    duk.putPropString(of, DUK_HIDDEN_SYMBOL("bindings"));
     
     auto of_events = duk.pushObject();
     // fill event slots with null
